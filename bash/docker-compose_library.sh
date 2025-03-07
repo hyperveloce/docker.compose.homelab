@@ -1,6 +1,6 @@
 #!/bin/bash
-#chmod +x docker-compose-library.sh
-#./docker-compose-library.sh
+#chmod +x docker-compose_library.sh
+#./docker-compose_library.sh
 
 echo "Docker Compose Command Library"
 echo "1. Start Services"

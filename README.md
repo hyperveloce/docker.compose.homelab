@@ -19,14 +19,8 @@
 This section should explain what your project is about. Provide the context for why your project exists, what problem it solves, or what it's intended to do.
 
 ### Features
-- Feature 1
-- Feature 2
-- Feature 3
-
-### Technologies Used
-- Language/Framework 1
-- Language/Framework 2
-- Database/Tool 1
+- Homarr dash board
+- NextCloud
 
 ---
 
@@ -36,8 +30,8 @@ Follow these steps to get your development environment set up.
 
 ### Prerequisites
 Make sure you have the following installed:
-- [Node.js](https://nodejs.org/) (version x.x.x)
 - [Docker](https://www.docker.com/)
+- [Docker-Compose](https://www.docker-compose.com/)
 - Any other dependencies your project needs
 
 ### Steps
@@ -54,4 +48,6 @@ Make sure you have the following installed:
    echo "{new-secure-password}" | sudo docker secret create mysql_user -
    sudo docker secret ls
 
+3. environment setup:
+   ```bash
    export USERDIR=/home/kanasu/kserver
