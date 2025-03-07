@@ -46,3 +46,12 @@ Make sure you have the following installed:
    ```bash
    git clone https://github.com/yourusername/project-name.git
    cd project-name
+
+2. pre-setup for docker:
+   ```bash
+   echo "{new-secure-password}" | sudo docker secret create mysql_password -
+   echo "{new-secure-password}" | sudo docker secret create mysql_root_password -
+   echo "{new-secure-password}" | sudo docker secret create mysql_user -
+   sudo docker secret ls
+
+   export USERDIR=/home/kanasu/kserver
