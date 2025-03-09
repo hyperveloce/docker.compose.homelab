@@ -15,7 +15,7 @@ services:
       - "53:53/udp" # DNS port
       - "53:53/tcp" # DNS port (TCP)
       - "82:80" # Web interface
-      - "443:443" # Web interface (if SSL enabled)
+      - "444:443" # Web interface (if SSL enabled)
     volumes:
       - ./etc-pihole:/etc/pihole # Mount Pi-hole configuration directory
       - ./etc-dnsmasq.d:/etc/dnsmasq.d # Mount dnsmasq configuration directory
