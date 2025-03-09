@@ -20,7 +20,7 @@ services:
       - ./etc-pihole:/etc/pihole # Mount Pi-hole configuration directory
       - ./etc-dnsmasq.d:/etc/dnsmasq.d # Mount dnsmasq configuration directory
     networks:
-      - my_custom_network # Connect Pi-hole to your custom network
+      - app_network # Connect Pi-hole to your custom network
     restart: unless-stopped
 
   nginx_proxy_manager:
