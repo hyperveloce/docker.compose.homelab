@@ -1,6 +1,28 @@
 version: "3.8"
 
 services:
+  # Pi-hole Service
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    environment:
+      - TZ=Europe/London # Change this to your time zone
+      - WEBPASSWORD=your_admin_password # Set Pi-hole admin password
+      - PIHOLE_DOCKER_TAG=latest
+      - DNS1=8.8.8.8 # You can use Google DNS or another DNS server
+      - DNS2=8.8.4.4 # You can use Google DNS or another DNS server
+    ports:
+      - "53:53/udp" # DNS port
+      - "53:53/tcp" # DNS port (TCP)
+      - "80:80" # Web interface
+      - "443:443" # Web interface (if SSL enabled)
+    volumes:
+      - ./etc-pihole:/etc/pihole # Mount Pi-hole configuration directory
+      - ./etc-dnsmasq.d:/etc/dnsmasq.d # Mount dnsmasq configuration directory
+    networks:
+      - my_custom_network # Connect Pi-hole to your custom network
+    restart: unless-stopped
+
   nginx_proxy_manager:
     image: "jc21/nginx-proxy-manager:latest"
     container_name: nginx_proxy_manager
