@@ -1,6 +1,20 @@
 version: "3.8"
 
 services:
+  nginx_proxy_manager:
+    image: "jc21/nginx-proxy-manager:latest"
+    container_name: nginx_proxy_manager
+    restart: always
+    ports:
+      - "80:80"
+      - "81:81" # Admin interface
+      - "443:443"
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+
   # MariaDB Service
   db:
     image: mariadb:latest
