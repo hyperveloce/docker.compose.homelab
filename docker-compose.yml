@@ -6,10 +6,10 @@ services:
     image: mariadb:latest
     container_name: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword # Change this to a strong password
+      MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password # Change this to a strong password
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
-      MYSQL_PASSWORD: nextcloudpassword # Change this to a strong password
+      MYSQL_PASSWORD: /run/secrets/mysql_password # Change this to a strong password
     volumes:
       - nextclouddb_data:/var/lib/mysql
     networks:
@@ -22,10 +22,8 @@ services:
     ports:
       - "8080:80" # Exposes Nextcloud on port 8080
     environment:
-      MYSQL_PASSWORD: nextcloudpassword # Same as the DB password
+      MYSQL_PASSWORD: /run/secrets/mysql_password # Same as the DB password
       MYSQL_DATABASE: nextcloud
-      # - MYSQL_PASSWORD=/run/secrets/mysql_password
-      # - MYSQL_ROOT_PASSWORD=/run/secrets/mysql_root_password
       MYSQL_USER: nextcloud
       MYSQL_HOST: db
       REDIS_HOST: redis
