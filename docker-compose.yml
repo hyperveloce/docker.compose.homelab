@@ -28,6 +28,8 @@ services:
       MYSQL_HOST: db
       REDIS_HOST: redis
       REDIS_HOST_PASSWORD: redispassword # You can change this password
+      MEMCACHE_LOCAL: '\OC\Memcache\Redis' # Tells Nextcloud to use Redis for local caching
+      REDIS_PORT: 6379
     volumes:
       - nextcloud_data:/var/www/html
     depends_on:
@@ -60,7 +62,9 @@ services:
 # Volumes for persistent data
 volumes:
   nextclouddb_data:
+    name: nextclouddb_data
   nextcloud_data:
+    name: nextcloud_data
 
 # Network for both containers to communicate
 networks:
