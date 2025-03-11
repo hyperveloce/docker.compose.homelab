@@ -17,8 +17,8 @@ services:
       - "82:80" # Web interface
       - "444:443" # Web interface (if SSL enabled)
     volumes:
-      - /srv/data/pihole/etc-pihole:/etc/pihole # Mount Pi-hole configuration directory
-      - /srv/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d # Mount dnsmasq configuration directory
+      - /srv/data/pihole_etc-pihole:/etc/pihole # Mount Pi-hole configuration directory
+      - /srv/data/pihole_etc-dnsmasq.d:/etc/dnsmasq.d # Mount dnsmasq configuration directory
     networks:
       - app_network # Connect Pi-hole to your custom network
     restart: unless-stopped
@@ -34,8 +34,8 @@ services:
     environment:
       DB_SQLITE_FILE: "/data/database.sqlite"
     volumes:
-      - /srv/data/nginxpm/data:/data
-      - /srv/data/nginxpm/letsencrypt:/etc/letsencrypt
+      - /srv/data/nginxpm_data:/data
+      - /srv/data/nginxpm_letsencrypt:/etc/letsencrypt
 
   # MariaDB Service
   db:
@@ -47,7 +47,7 @@ services:
       MYSQL_USER: nextcloud
       MYSQL_PASSWORD: /run/secrets/mysql_password # Change this to a strong password
     volumes:
-      - nextclouddb_data:/var/lib/mysql
+      - /srv/volume/nextclouddb_data:/var/lib/mysql
     networks:
       - app_network
 
@@ -72,9 +72,9 @@ services:
       MEMCACHE_LOCAL: '\OC\Memcache\Redis' # Tells Nextcloud to use Redis for local caching
       REDIS_PORT: 6379
     volumes:
-      - /srv/data/nextcloud/nextcloud_data:/var/www/html/data # Bind mount for user data
-      - /srv/data/nextcloud/nextcloud_config:/var/www/html/config # Docker volume for config
-      - /srv/data/nextcloud/nextcloud_themes:/var/www/html/themes # Custom the
+      - /srv/data/nextcloud_data:/var/www/html/data # Bind mount for user data
+      - /srv/data/nextcloud_config:/var/www/html/config # Docker volume for config
+      - /srv/data/nextcloud_themes:/var/www/html/themes # Custom the
     depends_on:
       - db
       - redis
@@ -89,18 +89,18 @@ services:
     networks:
       - app_network
 
-  # homarr:
-  #   image: ghcr.io/ajnart/homarr:latest
-  #   container_name: homarr
-  #   restart: unless-stopped
-  #   ports:
-  #     - "7575:7575"
-  #   volumes:
-  #     - /srv/data/homarr/config:/config
-  #   environment:
-  #     - NODE_ENV=production
-  #   networks:
-  #     - app_network
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    container_name: homarr
+    restart: unless-stopped
+    ports:
+      - "7575:7575"
+    volumes:
+      - /srv/data/homarr_config:/config
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app_network
 
 # Volumes for persistent data
 volumes:

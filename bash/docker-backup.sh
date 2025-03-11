@@ -1,34 +1,40 @@
 #!/bin/bash
-#chmod +x docker-backup.sh
-#crontab -e
-#0 2 * * * /path/to/docker-backup.sh
 
-# Backup location
-BACKUP_DIR="/home/kanasu/docker.backup/nextcloud_backups"
-NEXTCLOUD_DIR="/srv/data/nextcloud"
-TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+# Define backup repository
+REPO="/home/kanasu/kserver/docker.backup"
 
-# Create versioned backup folder
-mkdir -p "$BACKUP_DIR/$TIMESTAMP"
+# Define directories and volumes to backup
+DIRECTORIES=(
+    "/srv/data/nextcloud/nextcloud_data"
+    "/srv/data/nextcloud/nextcloud_config"
+    "/srv/data/nextcloud/nextcloud_themes"
 
-echo "Starting Nextcloud versioned backup..."
+)
 
-# Backup bind-mounted data
-echo "Backing up data, config, and themes..."
-rsync -av --progress $NEXTCLOUD_DIR/nextcloud_data "$BACKUP_DIR/$TIMESTAMP/"
-rsync -av --progress $NEXTCLOUD_DIR/nextcloud_themes "$BACKUP_DIR/$TIMESTAMP/"
-rsync -av --progress $NEXTCLOUD_DIR/nextcloud_config "$BACKUP_DIR/$TIMESTAMP/"
+VOLUMES=(
+    "nextclouddb_data"
+    "/var/lib/docker/volumes/my_volume2"
+)
 
-# Backup Docker volumes
-echo "Backing up Docker volumes..."
+# Define pruning policy
+KEEP_DAILY=7
+KEEP_WEEKLY=4
+KEEP_MONTHLY=6
 
-docker run --rm \
-  -v nextcloud_db:/db_backup \
-  -v "$BACKUP_DIR/$TIMESTAMP":/backup \
-  busybox tar czf /backup/nextcloud_db_backup.tar.gz /db_backup
+# Backup Directories
+for dir in "${DIRECTORIES[@]}"; do
+    backup_name=$(basename "$dir")-$(date +%Y-%m-%d)
+    borg create --stats "$REPO::$backup_name" "$dir"
+done
 
-# Keep the last 7 backups (rolling retention policy)
-echo "Cleaning up old backups..."
-find "$BACKUP_DIR" -type d -mtime +7 -exec rm -rf {} +
+# Backup Docker Volumes
+for vol in "${VOLUMES[@]}"; do
+    backup_name=$(basename "$vol")-$(date +%Y-%m-%d)
+    borg create --stats "$REPO::$backup_name" "$vol"
+done
 
-echo "Backup completed successfully! Stored at: $BACKUP_DIR/$TIMESTAMP"
+# Prune old backups according to the policy
+echo "Pruning old backups..."
+borg prune --list --keep-daily=$KEEP_DAILY --keep-weekly=$KEEP_WEEKLY --keep-monthly=$KEEP_MONTHLY "$REPO"
+
+echo "Backup and pruning complete."
