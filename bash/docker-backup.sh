@@ -1,4 +1,5 @@
 #!/bin/bash
+#chmod +x docker-backup.sh
 
 # Define backup repository
 REPO="/home/kanasu/kserver/docker.backup"
