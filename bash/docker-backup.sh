@@ -6,15 +6,14 @@ REPO="/home/kanasu/kserver/docker.backup"
 
 # Define directories and volumes to backup
 DIRECTORIES=(
-    "/srv/data/nextcloud/nextcloud_data"
-    "/srv/data/nextcloud/nextcloud_config"
-    "/srv/data/nextcloud/nextcloud_themes"
+    "/srv/data/nextcloud_data"
+    "/srv/data/nextcloud_config"
+    "/srv/data/nextcloud_themes"
 
 )
 
 VOLUMES=(
-    "nextclouddb_data"
-    "/var/lib/docker/volumes/my_volume2"
+    "/srv/volume/nextclouddb_data"
 )
 
 # Define pruning policy
