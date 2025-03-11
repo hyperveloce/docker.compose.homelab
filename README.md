@@ -51,3 +51,10 @@ Make sure you have the following installed:
 3. environment setup:
    ```bash
    export USERDIR=/home/kanasu/kserver
+
+### Backup and restore
+1. initialise:
+   ```bash
+   sudo chmod u+w /home/kanasu/kserver/docker.backup
+   sudo borg init --encryption=repokey /home/kanasu/kserver/docker.backup
+- set the password
