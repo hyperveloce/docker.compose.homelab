@@ -15,17 +15,9 @@ fi
 echo "Stopping containers..."
 docker-compose down
 
-# Restore Nextcloud data
-echo "Restoring Nextcloud data..."
-docker run --rm --volumes-from nextcloud -v $BACKUP_DIR:/backup ubuntu bash -c "tar xzf /backup/nextcloud_data_backup.tar.gz -C /var/www/html"
-
 # Restore MariaDB data
 echo "Restoring MariaDB data..."
 docker run --rm --volumes-from db -v $BACKUP_DIR:/backup ubuntu bash -c "tar xzf /backup/mariadb_backup.tar.gz -C /var/lib/mysql"
-
-# Restore Redis data (if Redis persistence is enabled)
-echo "Restoring Redis data..."
-docker run --rm --volumes-from redis -v $BACKUP_DIR:/backup ubuntu bash -c "tar xzf /backup/redis_backup.tar.gz -C /data"
 
 # Start the containers again
 echo "Starting containers..."

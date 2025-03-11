@@ -3,27 +3,32 @@
 #crontab -e
 #0 2 * * * /path/to/docker-backup.sh
 
-# Define backup destination (adjust path as needed)
-BACKUP_DIR="/path/to/backups"
-TIMESTAMP=$(date +'%Y%m%d_%H%M%S')
+# Backup location
+BACKUP_DIR="/home/kanasu/docker.backup/nextcloud_backups"
+NEXTCLOUD_DIR="/srv/data/nextcloud"
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 
-# Create backup directory if it doesn't exist
-mkdir -p "$BACKUP_DIR"
+# Create versioned backup folder
+mkdir -p "$BACKUP_DIR/$TIMESTAMP"
 
-# Back up Nextcloud data
-echo "Backing up Nextcloud data..."
-docker run --rm --volumes-from nextcloud -v $BACKUP_DIR:/backup ubuntu bash -c "tar czf /backup/nextcloud_data_backup_$TIMESTAMP.tar.gz /var/www/html"
+echo "Starting Nextcloud versioned backup..."
 
-# Back up MariaDB data
-echo "Backing up MariaDB data..."
-docker run --rm --volumes-from db -v $BACKUP_DIR:/backup ubuntu bash -c "tar czf /backup/mariadb_backup_$TIMESTAMP.tar.gz /var/lib/mysql"
+# Backup bind-mounted data
+echo "Backing up data, config, and themes..."
+rsync -av --progress $NEXTCLOUD_DIR/nextcloud_data "$BACKUP_DIR/$TIMESTAMP/"
+rsync -av --progress $NEXTCLOUD_DIR/nextcloud_themes "$BACKUP_DIR/$TIMESTAMP/"
+rsync -av --progress $NEXTCLOUD_DIR/nextcloud_config "$BACKUP_DIR/$TIMESTAMP/"
 
-# Back up Redis data (if Redis is using persistence)
-echo "Backing up Redis data..."
-docker run --rm --volumes-from redis -v $BACKUP_DIR:/backup ubuntu bash -c "tar czf /backup/redis_backup_$TIMESTAMP.tar.gz /data"
+# Backup Docker volumes
+echo "Backing up Docker volumes..."
 
-# Confirmation message
-echo "Backup completed successfully! Files saved as follows:"
-echo "Nextcloud: nextcloud_data_backup_$TIMESTAMP.tar.gz"
-echo "MariaDB: mariadb_backup_$TIMESTAMP.tar.gz"
-echo "Redis: redis_backup_$TIMESTAMP.tar.gz"
+docker run --rm \
+  -v nextcloud_db:/db_backup \
+  -v "$BACKUP_DIR/$TIMESTAMP":/backup \
+  busybox tar czf /backup/nextcloud_db_backup.tar.gz /db_backup
+
+# Keep the last 7 backups (rolling retention policy)
+echo "Cleaning up old backups..."
+find "$BACKUP_DIR" -type d -mtime +7 -exec rm -rf {} +
+
+echo "Backup completed successfully! Stored at: $BACKUP_DIR/$TIMESTAMP"
