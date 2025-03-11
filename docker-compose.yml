@@ -68,7 +68,7 @@ services:
       MYSQL_USER: nextcloud
       MYSQL_HOST: db
       ADMIN_USER: kanasu
-      ADMIN_PASSWORD: /run/secrets/nextcloud_admin_password
+      ADMIN_PASSWORD: /run/secrets/admin_password
       REDIS_HOST: redis
       REDIS_HOST_PASSWORD: redispassword # You can change this password
       MEMCACHE_LOCAL: '\OC\Memcache\Redis' # Tells Nextcloud to use Redis for local caching
