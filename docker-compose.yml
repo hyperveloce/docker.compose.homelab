@@ -58,11 +58,11 @@ services:
     ports:
       - "8080:80" # Exposes Nextcloud on port 8080
     environment:
-      PHP_UPLOAD_MAX_SIZE: 2G
-      PHP_MEMORY_LIMIT: 512M
-      APC_SHM_SIZE: 128M
-      OPCACHE_MEM_SIZE: 128M
-      CRON_PERIOD: 15m
+      PHP_UPLOAD_MAX_SIZE: 5G
+      PHP_MEMORY_LIMIT: 1024M
+      APC_SHM_SIZE: 256M
+      OPCACHE_MEM_SIZE: 256M
+      CRON_PERIOD: 10m
       MYSQL_PASSWORD: /run/secrets/mysql_password # Same as the DB password
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud

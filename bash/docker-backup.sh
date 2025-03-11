@@ -9,7 +9,9 @@ DIRECTORIES=(
     "/srv/data/nextcloud_data"
     "/srv/data/nextcloud_config"
     "/srv/data/nextcloud_themes"
-
+    "/srv/data/pihole_etc-pihole"
+    "/srv/data/pihole_etc-dnsmasq.d"
+    "/srv/data/homarr_config"
 )
 
 VOLUMES=(
