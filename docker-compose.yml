@@ -58,17 +58,17 @@ services:
     ports:
       - "8080:80" # Exposes Nextcloud on port 8080
     environment:
-      PHP_UPLOAD_MAX_SIZE: 2G
-      PHP_MEMORY_LIMIT: 512M
-      APC_SHM_SIZE: 128M
-      OPCACHE_MEM_SIZE: 128M
+      # PHP_UPLOAD_MAX_SIZE: 2G
+      # PHP_MEMORY_LIMIT: 512M
+      # APC_SHM_SIZE: 128M
+      # OPCACHE_MEM_SIZE: 128M
       CRON_PERIOD: 15m
       MYSQL_PASSWORD: /run/secrets/mysql_password # Same as the DB password
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
       MYSQL_HOST: db
-      # ADMIN_USER: kanasu
-      # ADMIN_PASSWORD: /run/secrets/admin_password
+      ADMIN_USER: kanasu
+      ADMIN_PASSWORD: /run/secrets/admin_password
       REDIS_HOST: redis
       REDIS_HOST_PASSWORD: redispassword # You can change this password
       MEMCACHE_LOCAL: '\OC\Memcache\Redis' # Tells Nextcloud to use Redis for local caching
