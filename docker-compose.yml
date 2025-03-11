@@ -58,8 +58,8 @@ services:
     ports:
       - "8080:80" # Exposes Nextcloud on port 8080
     environment:
-      UPLOAD_MAX_SIZE: 2G
-      MEMORY_LIMIT: 512M
+      PHP_UPLOAD_MAX_SIZE: 2G
+      PHP_MEMORY_LIMIT: 512M
       APC_SHM_SIZE: 128M
       OPCACHE_MEM_SIZE: 128M
       CRON_PERIOD: 15m
