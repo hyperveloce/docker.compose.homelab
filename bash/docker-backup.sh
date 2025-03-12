@@ -16,8 +16,8 @@ OTHER_DIRECTORIES=(
     "/srv/data/pihole_etc-pihole"
     "/srv/data/pihole_etc-dnsmasq.d"
     "/srv/data/homarr_config"
-    "nginxpm_data/"
-    "nginxpm_letsencrypt/"
+    "/srv/data/nginxpm_data/"
+    "/srv/data/nginxpm_letsencrypt/"
 )
 
 # Define volumes to backup
