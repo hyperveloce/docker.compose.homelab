@@ -16,6 +16,8 @@ OTHER_DIRECTORIES=(
     "/srv/data/pihole_etc-pihole"
     "/srv/data/pihole_etc-dnsmasq.d"
     "/srv/data/homarr_config"
+    "nginxpm_data/"
+    "nginxpm_letsencrypt/"
 )
 
 # Define volumes to backup
@@ -47,7 +49,7 @@ for vol in "${VOLUMES[@]}"; do
 done
 
 # Backup the original volume (if necessary, specify the volume directory here)
-ORIGINAL_VOLUME="/srv/volume/nextclouddb_data"
+VOLUME="/srv/volume/nextclouddb_data"
 backup_name="original_volume-$(date +%Y-%m-%d)"
 borg create --stats "$REPO::$backup_name" "$ORIGINAL_VOLUME"
 
