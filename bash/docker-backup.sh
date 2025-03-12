@@ -50,7 +50,7 @@ done
 
 # Backup the original volume (if necessary, specify the volume directory here)
 VOLUME="/srv/volume/nextclouddb_data"
-backup_name="original_volume-$(date +%Y-%m-%d)"
+backup_name="volume-$(date +%Y-%m-%d)"
 borg create --stats "$REPO::$backup_name" "$ORIGINAL_VOLUME"
 
 # Prune old backups according to the policy
