@@ -58,11 +58,8 @@ Make sure you have the following installed:
 1. initialise:
    ```bash
    sudo chmod u+w /home/kanasu/kserver/docker.backup
-   sudo BORG_KEY_FILE=borg-key.backup borg init --encryption=keyfile /home/kanasu/kserver/docker.backup
+   borg init --encryption=keyfile /home/kanasu/kserver/docker.backup
 - backup or restore key from proton pass
    ```bash
-   sudo borg key export /home/kanasu/kserver/docker.backup /home/kanasu/kserver/docker.backup-keyfile
-   sudo rm /home/kanasu/kserver/docker.backup-keyfile
-   echo "secure-passphrase" > /etc/borg_passphrase
-   chmod 600 /etc/borg_passphrase
+   cat .config/borg/keys/home_kanasu_kserver_docker_backup
 - run backup docker-backup.sh

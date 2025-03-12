@@ -1,19 +1,17 @@
 #!/bin/bash
-#chmod +x docker-backup.sh
+# chmod +x docker-backup.sh
 
 # Define backup repository
 REPO="/home/kanasu/kserver/docker.backup"
 
-# Define directories and volumes to backup
-DIRECTORIES=(
-    "/srv/data/nextcloud_data"
-    "/srv/data/nextcloud_config"
-    "/srv/data/nextcloud_themes"
-    "/srv/data/pihole_etc-pihole"
-    "/srv/data/pihole_etc-dnsmasq.d"
-    "/srv/data/homarr_config"
+# Define directory groups and corresponding backup names
+BACKUP_GROUPS=(
+    "nextcloud_group:/srv/data/nextcloud_data /srv/data/nextcloud_config /srv/data/nextcloud_themes"
+    "pihole_group:/srv/data/pihole_etc-pihole /srv/data/pihole_etc-dnsmasq.d"
+    "homarr_group:/srv/data/homarr_config"
 )
 
+# Define volumes to backup
 VOLUMES=(
     "/srv/volume/nextclouddb_data"
 )
@@ -23,15 +21,23 @@ KEEP_DAILY=7
 KEEP_WEEKLY=4
 KEEP_MONTHLY=6
 
-# Backup Directories
-for dir in "${DIRECTORIES[@]}"; do
-    backup_name=$(basename "$dir")-$(date +%Y-%m-%d)
-    borg create --stats "$REPO::$backup_name" "$dir"
+# Backup each group of directories
+for group in "${BACKUP_GROUPS[@]}"; do
+    # Split the group into backup name and directories
+    IFS=":" read -r backup_name directories <<< "$group"
+
+    # Append the date to the backup name
+    backup_name="$backup_name-$(date +%Y-%m-%d)"
+
+    # Backup the directories in the group
+    echo "Backing up $backup_name..."
+    borg create --stats "$REPO::$backup_name" $directories
 done
 
 # Backup Docker Volumes
 for vol in "${VOLUMES[@]}"; do
     backup_name=$(basename "$vol")-$(date +%Y-%m-%d)
+    echo "Backing up volume $vol..."
     borg create --stats "$REPO::$backup_name" "$vol"
 done
 
