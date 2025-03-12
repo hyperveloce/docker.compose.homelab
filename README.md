@@ -46,6 +46,7 @@ Make sure you have the following installed:
    echo "{new-secure-password}" | sudo docker secret create mysql_password -
    echo "{new-secure-password}" | sudo docker secret create mysql_root_password -
    echo "{new-secure-password}" | sudo docker secret create mysql_user -
+   echo "{new-secure-password}" | sudo docker secret create borg-passphrase -
    sudo docker secret ls
 
 3. environment setup:
@@ -56,5 +57,9 @@ Make sure you have the following installed:
 1. initialise:
    ```bash
    sudo chmod u+w /home/kanasu/kserver/docker.backup
-   sudo borg init --encryption=repokey /home/kanasu/kserver/docker.backup
-- set the password
+   sudo BORG_KEY_FILE=borg-key.backup borg init --encryption=keyfile /home/kanasu/kserver/docker.backup
+- backup or restore key from proton pass
+   ```bash
+   sudo borg key export /home/kanasu/kserver/docker.backup /home/kanasu/kserver/docker.backup-keyfile
+   sudo rm /home/kanasu/kserver/docker.backup-keyfile
+- run backup docker-backup.sh
