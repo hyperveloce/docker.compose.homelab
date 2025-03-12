@@ -4,10 +4,18 @@
 # Define backup repository
 REPO="/home/kanasu/kserver/docker.backup"
 
-# Define directory groups and corresponding backup names
-BACKUP_GROUPS=(
-    "nextcloud_group:/srv/data/nextcloud_data /srv/data/nextcloud_config /srv/data/nextcloud_themes"
-    "pihole_homarr_group:/srv/data/pihole_etc-pihole /srv/data/pihole_etc-dnsmasq.d /srv/data/homarr_config"
+# Define Nextcloud directories to backup
+NEXTCLOUD_DIRECTORIES=(
+    "/srv/data/nextcloud_data"
+    "/srv/data/nextcloud_config"
+    "/srv/data/nextcloud_themes"
+)
+
+# Define other directories to backup
+OTHER_DIRECTORIES=(
+    "/srv/data/pihole_etc-pihole"
+    "/srv/data/pihole_etc-dnsmasq.d"
+    "/srv/data/homarr_config"
 )
 
 # Define volumes to backup
@@ -20,25 +28,28 @@ KEEP_DAILY=7
 KEEP_WEEKLY=4
 KEEP_MONTHLY=6
 
-# Backup each group of directories
-for group in "${BACKUP_GROUPS[@]}"; do
-    # Split the group into backup name and directories
-    IFS=":" read -r backup_name directories <<< "$group"
+# Backup Nextcloud Directories
+for dir in "${NEXTCLOUD_DIRECTORIES[@]}"; do
+    backup_name="nextcloud_$(basename "$dir")-$(date +%Y-%m-%d)"
+    borg create --stats "$REPO::$backup_name" "$dir"
+done
 
-    # Append the date to the backup name
-    backup_name="$backup_name-$(date +%Y-%m-%d)"
-
-    # Backup the directories in the group
-    echo "Backing up $backup_name..."
-    borg create --stats "$REPO::$backup_name" $directories
+# Backup Other Directories
+for dir in "${OTHER_DIRECTORIES[@]}"; do
+    backup_name="other_$(basename "$dir")-$(date +%Y-%m-%d)"
+    borg create --stats "$REPO::$backup_name" "$dir"
 done
 
 # Backup Docker Volumes
 for vol in "${VOLUMES[@]}"; do
-    backup_name=$(basename "$vol")-$(date +%Y-%m-%d)
-    echo "Backing up volume $vol..."
+    backup_name="volume_$(basename "$vol")-$(date +%Y-%m-%d)"
     borg create --stats "$REPO::$backup_name" "$vol"
 done
+
+# Backup the original volume (if necessary, specify the volume directory here)
+ORIGINAL_VOLUME="/srv/volume/nextclouddb_data"
+backup_name="original_volume-$(date +%Y-%m-%d)"
+borg create --stats "$REPO::$backup_name" "$ORIGINAL_VOLUME"
 
 # Prune old backups according to the policy
 echo "Pruning old backups..."
