@@ -27,14 +27,27 @@ for group in "${BACKUP_GROUPS[@]}"; do
     GROUP_NAME=$(echo "$group" | cut -d: -f1)
     DIRECTORIES=$(echo "$group" | cut -d: -f2-)
 
-    # Create the backup for this group
-    backup_name="${GROUP_NAME}-$(date +%Y-%m-%d)"
-    borg create --stats "$REPO::$backup_name" $DIRECTORIES
+    # Log group name and directories being backed up
+    echo "Backing up group: $GROUP_NAME"
+    echo "Directories: $DIRECTORIES"
+
+    # Check if directories exist before running borg create
+    for dir in $DIRECTORIES; do
+        if [ ! -d "$dir" ]; then
+            echo "WARNING: Directory $dir does not exist. Skipping."
+        else
+            # Create the backup for this group
+            backup_name="${GROUP_NAME}-$(date +%Y-%m-%d)"
+            echo "Running: borg create --stats \"$REPO::$backup_name\" $dir"
+            borg create --stats "$REPO::$backup_name" $dir
+        fi
+    done
 done
 
 # Backup Docker Volumes
 for vol in "${VOLUMES[@]}"; do
     backup_name="volumes-$(date +%Y-%m-%d)"
+    echo "Backing up volume: $vol"
     borg create --stats "$REPO::$backup_name" "$vol"
 done
 
