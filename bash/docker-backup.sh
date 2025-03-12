@@ -4,23 +4,14 @@
 # Define backup repository
 REPO="/home/kanasu/kserver/docker.backup"
 
-# Define Nextcloud directories to backup
-NEXTCLOUD_DIRECTORIES=(
-    "/srv/data/nextcloud_data"
-    "/srv/data/nextcloud_config"
-    "/srv/data/nextcloud_themes"
+# Define backup groups
+BACKUP_GROUPS=(
+    "nextcloud_group:/srv/data/nextcloud_data /srv/data/nextcloud_config /srv/data/nextcloud_themes"
+    "pihole_homarr_group:/srv/data/pihole_etc-pihole /srv/data/pihole_etc-dnsmasq.d /srv/data/homarr_config"
+    "nginxpm_group:/srv/data/nginxpm_data /srv/data/nginxpm_letsencrypt"
 )
 
-# Define other directories to backup
-OTHER_DIRECTORIES=(
-    "/srv/data/pihole_etc-pihole"
-    "/srv/data/pihole_etc-dnsmasq.d"
-    "/srv/data/homarr_config"
-    "/srv/data/nginxpm_data/"
-    "/srv/data/nginxpm_letsencrypt/"
-)
-
-# Define volumes to backup
+# Define Docker volumes to back up
 VOLUMES=(
     "/srv/volume/nextclouddb_data"
 )
@@ -30,28 +21,22 @@ KEEP_DAILY=7
 KEEP_WEEKLY=4
 KEEP_MONTHLY=6
 
-# Backup Nextcloud Directories
-for dir in "${NEXTCLOUD_DIRECTORIES[@]}"; do
-    backup_name="nextcloud_$(basename "$dir")-$(date +%Y-%m-%d)"
-    borg create --stats "$REPO::$backup_name" "$dir"
-done
+# Loop through backup groups and create backups
+for group in "${BACKUP_GROUPS[@]}"; do
+    # Split the group string into name and directories
+    GROUP_NAME=$(echo "$group" | cut -d: -f1)
+    DIRECTORIES=$(echo "$group" | cut -d: -f2-)
 
-# Backup Other Directories
-for dir in "${OTHER_DIRECTORIES[@]}"; do
-    backup_name="other_$(basename "$dir")-$(date +%Y-%m-%d)"
-    borg create --stats "$REPO::$backup_name" "$dir"
+    # Create the backup for this group
+    backup_name="${GROUP_NAME}-$(date +%Y-%m-%d)"
+    borg create --stats "$REPO::$backup_name" $DIRECTORIES
 done
 
 # Backup Docker Volumes
 for vol in "${VOLUMES[@]}"; do
-    backup_name="volume_$(basename "$vol")-$(date +%Y-%m-%d)"
+    backup_name="volumes-$(date +%Y-%m-%d)"
     borg create --stats "$REPO::$backup_name" "$vol"
 done
-
-# Backup the original volume (if necessary, specify the volume directory here)
-VOLUME="/srv/volume/nextclouddb_data"
-backup_name="volume-$(date +%Y-%m-%d)"
-borg create --stats "$REPO::$backup_name" "$ORIGINAL_VOLUME"
 
 # Prune old backups according to the policy
 echo "Pruning old backups..."
