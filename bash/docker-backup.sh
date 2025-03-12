@@ -1,5 +1,5 @@
 #!/bin/bash
-# chmod +x docker-backup.sh
+#chmod +x docker-backup.sh
 
 # Define backup repository
 REPO="/home/kanasu/kserver/docker.backup"
@@ -7,8 +7,7 @@ REPO="/home/kanasu/kserver/docker.backup"
 # Define directory groups and corresponding backup names
 BACKUP_GROUPS=(
     "nextcloud_group:/srv/data/nextcloud_data /srv/data/nextcloud_config /srv/data/nextcloud_themes"
-    "pihole_group:/srv/data/pihole_etc-pihole /srv/data/pihole_etc-dnsmasq.d"
-    "homarr_group:/srv/data/homarr_config"
+    "pihole_homarr_group:/srv/data/pihole_etc-pihole /srv/data/pihole_etc-dnsmasq.d /srv/data/homarr_config"
 )
 
 # Define volumes to backup
