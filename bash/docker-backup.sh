@@ -1,8 +1,8 @@
 #!/bin/bash
 #chmod +x docker-backup.sh
 
-# Read the passphrase from Docker secret and export it
-export BORG_PASSPHRASE=$(cat /run/secrets/borg-passphrase)
+# Read the passphrase
+export BORG_PASSPHRASE_FILE="/etc/borg_passphrase"
 
 # Define backup repository
 REPO="/home/kanasu/kserver/docker.backup"

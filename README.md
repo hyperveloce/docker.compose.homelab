@@ -43,10 +43,11 @@ Make sure you have the following installed:
 
 2. pre-setup for docker:
    ```bash
+   docker swarm init
    echo "{new-secure-password}" | sudo docker secret create mysql_password -
    echo "{new-secure-password}" | sudo docker secret create mysql_root_password -
    echo "{new-secure-password}" | sudo docker secret create mysql_user -
-   echo "{new-secure-password}" | sudo docker secret create borg-passphrase -
+   echo "{new-secure-password}" | sudo docker secret create admin_password -
    sudo docker secret ls
 
 3. environment setup:
@@ -62,4 +63,6 @@ Make sure you have the following installed:
    ```bash
    sudo borg key export /home/kanasu/kserver/docker.backup /home/kanasu/kserver/docker.backup-keyfile
    sudo rm /home/kanasu/kserver/docker.backup-keyfile
+   echo "secure-passphrase" > /etc/borg_passphrase
+   chmod 600 /etc/borg_passphrase
 - run backup docker-backup.sh
