@@ -33,13 +33,13 @@ fi
 
 # Restore the Docker app data and DB backup from Borg
 echo "Restoring Docker app data..."
-if ! borg extract --stats "$REPO::$BACKUP_NAME" "$RESTORE_APP_DATA_DIR"; then
+if ! borg extract "$REPO::$BACKUP_NAME" "$RESTORE_APP_DATA_DIR"; then
     echo "Failed to restore Docker app data!"
     exit 1
 fi
 
 echo "Restoring Nextcloud database..."
-if ! borg extract --stats "$REPO::$BACKUP_NAME" "$RESTORE_DB_DIR"; then
+if ! borg extract "$REPO::$BACKUP_NAME" "$RESTORE_DB_DIR"; then
     echo "Failed to restore Nextcloud database!"
     exit 1
 fi
@@ -61,7 +61,4 @@ echo "- Docker app data has been restored to $RESTORE_APP_DATA_DIR"
 echo "- Nextcloud DB data has been restored to $RESTORE_DB_DIR"
 echo "You can manually verify the data in the restore directories."
 
-# Optionally, you can start the containers with the restored data here:
-# docker-compose up -d
-
-echo "Restore process completed. Data is now available for validation."
+# Optionally, you
