@@ -55,11 +55,24 @@ Make sure you have the following installed:
    export USERDIR=/home/kanasu/kserver
 
 ### Backup and restore
-1. initialise:
+1. setup:
    ```bash
-   sudo chmod u+w /home/kanasu/kserver/docker.backup
-   borg init --encryption=keyfile /home/kanasu/kserver/docker.backup
+   export RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups
+   export RESTIC_PASSWORD=yourpassword
+   restic init
+   restic snapshots
+2. backup:
+   ```bash
+   restic backup /srv/volume
+3. restore:
+   ```bash
+   restic restore 4f3b9054 --target /srv/volume/nextclouddb_data_restored/
+3. restore:
+   ```bash
+   restic forget id
+   restic prune
+   
 - backup or restore key from proton pass
    ```bash
-   cat .config/borg/keys/home_kanasu_kserver_docker_backup
+   cat 123123
 - run backup docker-backup.sh
