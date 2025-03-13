@@ -124,6 +124,25 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  restic-web:
+    image: restic/restic-web:latest
+    container_name: restic-web
+    restart: unless-stopped
+    ports:
+      - "8000:8000" # Exposes the UI on port 8000
+    volumes:
+      - /srv/data:/srv/data
+      - /srv/volume:/srv/volume
+      - /home/kanasu/kserver/restic.backups:/restic/repository # Use the same repository path as the Restic container
+    #   - /path/to/restic/password-file:/restic/password-file # Optional: Restic password file (if used)
+    # environment:
+    #   - RESTIC_PASSWORD_FILE=/restic/password-file # Point to the password file (if used)
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 # Volumes for persistent data
 volumes:
   nextclouddb_data:
