@@ -1,5 +1,5 @@
 #!/bin/bash
-# chmod +x borg-backup.sh
+# chmod +x docker-backup.sh
 
 set -e  # Exit immediately if any command fails
 set -o pipefail  # Catch errors in pipelines
