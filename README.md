@@ -58,21 +58,21 @@ Make sure you have the following installed:
 1. setup:
    ```bash
    export RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups
-   export RESTIC_PASSWORD=yourpassword
+   export RESTIC_PASSWORD=/etc/restic/restic-pw.txt
    restic init
    restic snapshots
+   
 2. backup:
    ```bash
    restic backup /srv/volume
+   
 3. restore:
    ```bash
    restic restore 4f3b9054 --target /srv/volume/nextclouddb_data_restored/
+   
 3. restore:
    ```bash
+   restic snapshots
    restic forget id
    restic prune
    
-- backup or restore key from proton pass
-   ```bash
-   cat 123123
-- run backup docker-backup.sh
