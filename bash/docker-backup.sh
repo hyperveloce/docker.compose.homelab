@@ -7,30 +7,29 @@ set -o pipefail  # Catch errors in pipelines
 # Define backup repository
 REPO="/home/kanasu/kserver/docker.backup"
 
-# Define Docker app data paths
+# Define Docker app data paths (Nextcloud data, configs, themes)
 DOCKER_APP_DATA=(
     "/srv/data/nextcloud_data"
     "/srv/data/nextcloud_config"
     "/srv/data/nextcloud_themes"
-    "/srv/data/pihole_etc-pihole"
-    "/srv/data/pihole_etc-dnsmasq.d"
-    "/srv/data/homarr_config"
-    "/srv/data/nginxpm_data"
-    "/srv/data/nginxpm_letsencrypt"
 )
 
-# Define Nextcloud database dump path
-DB_DUMP_PATH="$REPO/nextcloud_db"
+# Define Docker database volume
+DB_VOLUME="nextclouddb_data"
+DB_BACKUP_PATH="$REPO/nextcloud_db"
 
 # Create necessary directories
 echo "Creating backup directories..."
 mkdir -p "$REPO/docker_app_data" || { echo "Failed to create docker_app_data directory"; exit 1; }
-mkdir -p "$DB_DUMP_PATH" || { echo "Failed to create nextcloud_db directory"; exit 1; }
+mkdir -p "$DB_BACKUP_PATH" || { echo "Failed to create nextcloud_db directory"; exit 1; }
 
-# Dump the Nextcloud database
-echo "Dumping Nextcloud database..."
-if ! docker exec nextcloud-db-container mysqldump -u root -p<password> nextcloud > "$DB_DUMP_PATH/nextcloud-db-$(date +%Y-%m-%d).sql"; then
-    echo "Database dump failed!"
+# Backup Nextcloud database volume
+echo "Backing up Nextcloud database volume: $DB_VOLUME"
+if ! docker run --rm \
+    -v "$DB_VOLUME:/source" \
+    -v "$DB_BACKUP_PATH:/backup" \
+    busybox cp -r /source /backup/; then
+    echo "Failed to back up Docker volume $DB_VOLUME"
     exit 1
 fi
 
@@ -50,7 +49,7 @@ done
 # Create Borg backup
 backup_name="docker-app-backup-$(date +%Y-%m-%d)"
 echo "Creating Borg backup: $backup_name"
-if ! borg create --stats "$REPO::$backup_name" "$REPO/docker_app_data" "$DB_DUMP_PATH"; then
+if ! borg create --stats "$REPO::$backup_name" "$REPO/docker_app_data" "$DB_BACKUP_PATH"; then
     echo "Borg backup failed!"
     exit 1
 fi
