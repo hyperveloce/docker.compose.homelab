@@ -102,6 +102,28 @@ services:
     networks:
       - app_network
 
+  restic:
+    image: restic/restic:latest
+    container_name: restic-backup
+    restart: unless-stopped
+    volumes:
+      - /srv/data:/srv/data # Your backup source (e.g., Nextcloud or other data directories)
+      - /srv/volume:/srv/volume # Optional: If you're using a network drive
+      - /home/kanasu/kserver/restic.backups:/restic/repository # Restic repository for backups
+    environment:
+      - RESTIC_PASSWORD=yourpassword # Secure password for your backup repository
+    command:
+      [
+        "sh",
+        "-c",
+        "restic backup /srv/data --password-file /restic/password.txt",
+      ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 # Volumes for persistent data
 volumes:
   nextclouddb_data:
