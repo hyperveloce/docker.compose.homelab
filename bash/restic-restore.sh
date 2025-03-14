@@ -2,32 +2,38 @@
 #chmod +x ~/restic-restore.sh
 
 # Config
-RESTIC_REPOSITORY="/home/kanasu/kserver/restic.backups"
-RESTIC_PASSWORD_FILE="/home/kanasu/kserver/empty-password.txt"
-RESTORE_DIR="/srv/restore"
+RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups
+RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt
 LOG_FILE="/home/kanasu/kserver/restic-restore.log"
+RESTORE_TARGET="/srv/restore"  # Path to restore the backup
 
-# Optional: List available snapshots
-echo "Available snapshots:" | tee -a "$LOG_FILE"
-restic snapshots --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" | tee -a "$LOG_FILE"
+# Function to restore the latest snapshot
+restore_latest_snapshot() {
+    echo "Restoring the latest snapshot tagged 'latest'..." | tee -a "$LOG_FILE"
 
-# Ask for a snapshot ID to restore (optional: set this manually)
-echo "Enter the snapshot ID to restore (press Enter for the latest snapshot):"
-read -r SNAPSHOT_ID
+    # Find the latest snapshot tagged with 'latest'
+    LATEST_SNAPSHOT=$(restic snapshots --tag latest --json | jq -r '.[-1].id')
 
-# If no ID is provided, use the latest snapshot
-if [ -z "$SNAPSHOT_ID" ]; then
-    SNAPSHOT_ID=$(restic snapshots --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --json | jq -r '.[-1].id')
-    echo "Using latest snapshot: $SNAPSHOT_ID" | tee -a "$LOG_FILE"
-fi
+    if [ -z "$LATEST_SNAPSHOT" ]; then
+        echo "No snapshot found with the 'latest' tag. Aborting restore." | tee -a "$LOG_FILE"
+        exit 1
+    fi
 
-# Start restore
-echo "Restoring snapshot $SNAPSHOT_ID to $RESTORE_DIR..." | tee -a "$LOG_FILE"
-restic restore "$SNAPSHOT_ID" \
-    --repo "$RESTIC_REPOSITORY" \
-    --password-file "$RESTIC_PASSWORD_FILE" \
-    --target "$RESTORE_DIR" \
-    --exclude ".restic" # Exclude Restic metadata
+    # Restore the latest snapshot
+    echo "Restoring snapshot $LATEST_SNAPSHOT to $RESTORE_TARGET" | tee -a "$LOG_FILE"
+    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET"
+
+    if [ $? -eq 0 ]; then
+        echo "Restore completed successfully." | tee -a "$LOG_FILE"
+    else
+        echo "Restore failed." | tee -a "$LOG_FILE"
+        exit 1
+    fi
+}
+
+# Start restore process
+echo "Starting restore: $(date)" | tee -a "$LOG_FILE"
+restore_latest_snapshot
 
 # Finish
 echo "Restore completed: $(date)" | tee -a "$LOG_FILE"
