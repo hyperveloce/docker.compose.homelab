@@ -109,18 +109,6 @@ services:
     networks:
       - app_network
 
-  # watchtower:
-  #   image: containrrr/watchtower
-  #   container_name: watchtower
-  #   restart: unless-stopped
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   environment:
-  #     - WATCHTOWER_CLEANUP=true # Optionally, clean up old images
-  #     - WATCHTOWER_POLL_INTERVAL=86400 # Time in seconds to check for updates (86400 = 1 day)
-  #   networks:
-  #     - app_network
-
 # Volumes for persistent data
 volumes:
   nextclouddb_data:
