@@ -84,14 +84,13 @@ services:
       - app_network
 
   homarr:
-    image: homerproject/homarr:latest
+    image: ghcr.io/homarr-labs/homarr:latest
     container_name: homarr
     restart: unless-stopped
     ports:
       - "7575:7575"
     volumes:
-      - /srv/data/homarr_configs:/app/data/configs
-      - /srv/data/homarr_data:/data
+      - /srv/data/homarr_appdata:/appdata
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - NODE_ENV=production
