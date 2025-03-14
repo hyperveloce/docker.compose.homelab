@@ -50,5 +50,41 @@ restore_latest_snapshot() {
 echo "Starting restore: $(date)" | tee -a "$LOG_FILE"
 restore_latest_snapshot
 
+# Paths to the original directories and the temporary restore location
+original_dir_data="/srv/data"
+restore_dir_data="/srv/restore/srv/data"
+original_dir_volume="/srv/volume"
+restore_dir_volume="/srv/restore/srv/volume"
+
+# Perform a Restic check (you can skip this step if you already use it for integrity checks)
+restic check
+
+# Perform the restore operation (modify this to match your restore process)
+restic restore latest --target /srv/restore
+
+# Get the size of the original and restored directories for 'data'
+original_size_data=$(du -sh "$original_dir_data" | awk '{print $1}')
+restored_size_data=$(du -sh "$restore_dir_data" | awk '{print $1}')
+
+# Get the size of the original and restored directories for 'volume'
+original_size_volume=$(du -sh "$original_dir_volume" | awk '{print $1}')
+restored_size_volume=$(du -sh "$restore_dir_volume" | awk '{print $1}')
+
+# Compare the sizes for 'data'
+if [ "$original_size_data" != "$restored_size_data" ]; then
+    echo "Error: Restored size for 'data' does not match original size! $original_size_data != $restored_size_data"
+    exit 1
+else
+    echo "Restored size for 'data' matches the original size."
+fi
+
+# Compare the sizes for 'volume'
+if [ "$original_size_volume" != "$restored_size_volume" ]; then
+    echo "Error: Restored size for 'volume' does not match original size! $original_size_volume != $restored_size_volume"
+    exit 1
+else
+    echo "Restored size for 'volume' matches the original size."
+fi
+
 # Finish
 echo "Restore completed: $(date)" | tee -a "$LOG_FILE"
