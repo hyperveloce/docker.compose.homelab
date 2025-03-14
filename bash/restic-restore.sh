@@ -19,9 +19,14 @@ restore_latest_snapshot() {
         exit 1
     fi
 
-    # Restore the latest snapshot
+    # Restore both /srv/volume and /srv/data from the latest snapshot
     echo "Restoring snapshot $LATEST_SNAPSHOT to $RESTORE_TARGET" | tee -a "$LOG_FILE"
-    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET"
+
+    # Restore /srv/volume
+    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET/srv/volume" --path "/srv/volume"
+
+    # Restore /srv/data
+    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET/srv/data" --path "/srv/data"
 
     if [ $? -eq 0 ]; then
         echo "Restore completed successfully." | tee -a "$LOG_FILE"
