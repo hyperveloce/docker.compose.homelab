@@ -102,25 +102,6 @@ services:
     networks:
       - app_network
 
-  backrest:
-    image: garethgeorge/backrest:latest
-    container_name: backrest-ui
-    restart: unless-stopped
-    ports:
-      - "8001:8001" # Expose UI on port 8001
-    volumes:
-      - /srv/data:/srv/data
-      - /srv/volume:/srv/volume
-      - /home/kanasu/kserver/restic.backups:/restic/repository # Same repository as Restic container
-    #   - /path/to/restic/password-file:/restic/password-file # Optional: Restic password file
-    # environment:
-    #   - RESTIC_PASSWORD_FILE=/restic/password-file # Point to password file (if using)
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 # Volumes for persistent data
 volumes:
   nextclouddb_data:

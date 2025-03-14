@@ -58,21 +58,22 @@ Make sure you have the following installed:
 1. setup:
    ```bash
    export RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups
-   export RESTIC_PASSWORD=/etc/restic/restic-pw.txt
+   export RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt
    restic init
    restic snapshots
-   
+
 2. backup:
    ```bash
+   restic backup /srv/data
    restic backup /srv/volume
-   
+   restic snapshots
+
 3. restore:
    ```bash
-   restic restore 4f3b9054 --target /srv/volume/nextclouddb_data_restored/
-   
-3. restore:
+   restic restore latest --target /srv/restore --include /srv/data
+
+3. cleanup:
    ```bash
    restic snapshots
    restic forget id
    restic prune
-   
