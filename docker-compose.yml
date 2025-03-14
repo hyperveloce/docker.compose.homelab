@@ -5,6 +5,7 @@ services:
   pihole:
     image: pihole/pihole:latest
     container_name: pihole
+    restart: unless-stopped
     environment:
       - TZ=Australia/Melbourne
       - WEBPASSWORD=/run/secrets/admin_password
@@ -21,12 +22,11 @@ services:
       - /srv/data/pihole_etc-dnsmasq.d:/etc/dnsmasq.d # Mount dnsmasq configuration directory
     networks:
       - app_network # Connect Pi-hole to your custom network
-    restart: unless-stopped
 
   nginx_proxy_manager:
     image: "jc21/nginx-proxy-manager:latest"
     container_name: nginx_proxy_manager
-    restart: always
+    restart: unless-stopped
     ports:
       - "80:80"
       - "81:81" # Admin interface
@@ -41,6 +41,7 @@ services:
   db:
     image: mariadb:latest
     container_name: mariadb
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password # Change this to a strong password
       MYSQL_DATABASE: nextcloud
@@ -55,6 +56,7 @@ services:
   nextcloud:
     image: nextcloud:latest
     container_name: nextcloud
+    restart: unless-stopped
     ports:
       - "8080:80" # Exposes Nextcloud on port 8080
     environment:
@@ -79,6 +81,7 @@ services:
   redis:
     image: redis:alpine
     container_name: redis
+    restart: unless-stopped
     command: ["redis-server", "--requirepass", "redispassword"] # Set a password for Redis
     networks:
       - app_network
@@ -100,12 +103,12 @@ services:
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
+    restart: unless-stopped
     ports:
       - "9000:9000" # Port for the Portainer web UI
     volumes:
       - /srv/volume/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
     networks:
       - app_network
 
