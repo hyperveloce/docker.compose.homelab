@@ -102,10 +102,24 @@ services:
     networks:
       - app_network
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9000:9000" # Port for the Portainer web UI
+    volumes:
+      - /srv/volume/portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      - app_network
+
 # Volumes for persistent data
 volumes:
   nextclouddb_data:
     name: nextclouddb_data
+  portainer_data:
+    name: portainer_data
 
 # Network for both containers to communicate
 networks:
