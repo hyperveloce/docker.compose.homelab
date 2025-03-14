@@ -1,5 +1,5 @@
 #!/bin/bash
-#chmod +x ~/restic-backup.sh
+#chmod +x restic-backup.sh
 
 # Config
 RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups
