@@ -93,7 +93,7 @@ services:
       - /srv/data/homarr_appdata:/appdata
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - SECRET_ENCRYPTION_KEY=8c8ac5b59f82382cf2a08391c0a31966965f7567b90fea98d2bb18ae7ca10204
+      - SECRET_ENCRYPTION_KEY=2bfd284f39d01c07913fd2b8a8fe43bbc9aaad3ae6c2983aa38c7ca49e2bd4c7
     networks:
       - app_network
 
