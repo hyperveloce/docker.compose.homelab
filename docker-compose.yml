@@ -84,7 +84,7 @@ services:
       - app_network
 
   homarr:
-    image: ghcr.io/ajnart/homarr:latest
+    image: homerproject/homarr:latest
     container_name: homarr
     restart: unless-stopped
     ports:
