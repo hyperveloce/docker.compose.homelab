@@ -1,8 +1,8 @@
 #!/bin/bash
 #chmod +x ~/restic-backup.sh
 # Config
-RESTIC_REPOSITORY="/home/kanasu/kserver/restic.backups"
-RESTIC_PASSWORD_FILE="/home/kanasu/kserver/empty-password.txt"
+RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups
+RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt
 LOG_FILE="/home/kanasu/kserver/restic-backup.log"
 
 # Paths to back up
