@@ -22,7 +22,7 @@ restore_latest_snapshot() {
     echo "Restoring the latest snapshot..." | tee -a "$LOG_FILE"
 
     # Find the latest snapshot using restic command without jq
-    LATEST_SNAPSHOT=$(restic snapshots --latest 1 --json | head -n 1 | awk '{print $1}')
+    LATEST_SNAPSHOT=$(restic snapshots --repo "$RESTIC_REPOSITORY" --latest 1 --json | grep -o '"id":"[^"]*' | head -n 1 | cut -d: -f2 | tr -d '"')
 
     if [ -z "$LATEST_SNAPSHOT" ]; then
         echo "No snapshot found. Aborting restore." | tee -a "$LOG_FILE"
@@ -33,10 +33,10 @@ restore_latest_snapshot() {
     echo "Restoring snapshot $LATEST_SNAPSHOT to $RESTORE_TARGET" | tee -a "$LOG_FILE"
 
     # Restore /srv/volume
-    restic restore "$LATEST_SNAPSHOT" --target "$RESTORE_TARGET/srv/volume" --path "/srv/volume"
+    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET/srv/volume" --path "/srv/volume"
 
     # Restore /srv/data
-    restic restore "$LATEST_SNAPSHOT" --target "$RESTORE_TARGET/srv/data" --path "/srv/data"
+    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET/srv/data" --path "/srv/data"
 
     if [ $? -eq 0 ]; then
         echo "Restore completed successfully." | tee -a "$LOG_FILE"
