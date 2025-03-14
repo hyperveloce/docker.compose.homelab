@@ -23,65 +23,65 @@ services:
       - app_network # Connect Pi-hole to your custom network
     restart: unless-stopped
 
-  nginx_proxy_manager:
-    image: "jc21/nginx-proxy-manager:latest"
-    container_name: nginx_proxy_manager
-    restart: always
-    ports:
-      - "80:80"
-      - "81:81" # Admin interface
-      - "443:443"
-    environment:
-      DB_SQLITE_FILE: "/data/database.sqlite"
-    volumes:
-      - /srv/data/nginxpm_data:/data
-      - /srv/data/nginxpm_letsencrypt:/etc/letsencrypt
+  # nginx_proxy_manager:
+  #   image: "jc21/nginx-proxy-manager:latest"
+  #   container_name: nginx_proxy_manager
+  #   restart: always
+  #   ports:
+  #     - "80:80"
+  #     - "81:81" # Admin interface
+  #     - "443:443"
+  #   environment:
+  #     DB_SQLITE_FILE: "/data/database.sqlite"
+  #   volumes:
+  #     - /srv/data/nginxpm_data:/data
+  #     - /srv/data/nginxpm_letsencrypt:/etc/letsencrypt
 
-  # MariaDB Service
-  db:
-    image: mariadb:latest
-    container_name: mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password # Change this to a strong password
-      MYSQL_DATABASE: nextcloud
-      MYSQL_USER: nextcloud
-      MYSQL_PASSWORD: /run/secrets/mysql_password # Change this to a strong password
-    volumes:
-      - /srv/volume/nextclouddb_data:/var/lib/mysql
-    networks:
-      - app_network
+  # # MariaDB Service
+  # db:
+  #   image: mariadb:latest
+  #   container_name: mariadb
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password # Change this to a strong password
+  #     MYSQL_DATABASE: nextcloud
+  #     MYSQL_USER: nextcloud
+  #     MYSQL_PASSWORD: /run/secrets/mysql_password # Change this to a strong password
+  #   volumes:
+  #     - /srv/volume/nextclouddb_data:/var/lib/mysql
+  #   networks:
+  #     - app_network
 
-  # Nextcloud Service
-  nextcloud:
-    image: nextcloud:latest
-    container_name: nextcloud
-    ports:
-      - "8080:80" # Exposes Nextcloud on port 8080
-    environment:
-      MYSQL_PASSWORD: /run/secrets/mysql_password # Same as the DB password
-      MYSQL_DATABASE: nextcloud
-      MYSQL_USER: nextcloud
-      MYSQL_HOST: db
-      REDIS_HOST: redis
-      REDIS_HOST_PASSWORD: redispassword # You can change this password
-      REDIS_PORT: 6379
-    volumes:
-      - /srv/data/nextcloud_data:/var/www/html/data # Bind mount for user data
-      - /srv/data/nextcloud_config:/var/www/html/config # Docker volume for config
-      - /srv/data/nextcloud_themes:/var/www/html/themes # Custom the
-    depends_on:
-      - db
-      - redis
-    networks:
-      - app_network
+  # # Nextcloud Service
+  # nextcloud:
+  #   image: nextcloud:latest
+  #   container_name: nextcloud
+  #   ports:
+  #     - "8080:80" # Exposes Nextcloud on port 8080
+  #   environment:
+  #     MYSQL_PASSWORD: /run/secrets/mysql_password # Same as the DB password
+  #     MYSQL_DATABASE: nextcloud
+  #     MYSQL_USER: nextcloud
+  #     MYSQL_HOST: db
+  #     REDIS_HOST: redis
+  #     REDIS_HOST_PASSWORD: redispassword # You can change this password
+  #     REDIS_PORT: 6379
+  #   volumes:
+  #     - /srv/data/nextcloud_data:/var/www/html/data # Bind mount for user data
+  #     - /srv/data/nextcloud_config:/var/www/html/config # Docker volume for config
+  #     - /srv/data/nextcloud_themes:/var/www/html/themes # Custom the
+  #   depends_on:
+  #     - db
+  #     - redis
+  #   networks:
+  #     - app_network
 
-  # Redis Service for Nextcloud Caching
-  redis:
-    image: redis:alpine
-    container_name: redis
-    command: ["redis-server", "--requirepass", "redispassword"] # Set a password for Redis
-    networks:
-      - app_network
+  # # Redis Service for Nextcloud Caching
+  # redis:
+  #   image: redis:alpine
+  #   container_name: redis
+  #   command: ["redis-server", "--requirepass", "redispassword"] # Set a password for Redis
+  #   networks:
+  #     - app_network
 
   homarr:
     image: ghcr.io/ajnart/homarr:latest
@@ -96,29 +96,29 @@ services:
     networks:
       - app_network
 
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    ports:
-      - "9000:9000" # Port for the Portainer web UI
-    volumes:
-      - /srv/volume/portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-    networks:
-      - app_network
+  # portainer:
+  #   image: portainer/portainer-ce:latest
+  #   container_name: portainer
+  #   ports:
+  #     - "9000:9000" # Port for the Portainer web UI
+  #   volumes:
+  #     - /srv/volume/portainer_data:/data
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   restart: unless-stopped
+  #   networks:
+  #     - app_network
 
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - WATCHTOWER_CLEANUP=true # Optionally, clean up old images
-      - WATCHTOWER_POLL_INTERVAL=86400 # Time in seconds to check for updates (86400 = 1 day)
-    networks:
-      - app_network
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   container_name: watchtower
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - WATCHTOWER_CLEANUP=true # Optionally, clean up old images
+  #     - WATCHTOWER_POLL_INTERVAL=86400 # Time in seconds to check for updates (86400 = 1 day)
+  #   networks:
+  #     - app_network
 
 # Volumes for persistent data
 volumes:
