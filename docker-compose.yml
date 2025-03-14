@@ -90,7 +90,7 @@ services:
     ports:
       - "7575:7575"
     volumes:
-      - /srv/data/homarr_config:/config
+      - /srv/data/homarr_appdata:/appdata
     environment:
       - NODE_ENV=production
     networks:
