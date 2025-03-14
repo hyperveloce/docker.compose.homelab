@@ -54,6 +54,16 @@ Make sure you have the following installed:
    ```bash
    export USERDIR=/home/kanasu/kserver
 
+### Nextcloud optimum config
+1. change below param for NextCloud container:
+   PHP_UPLOAD_MAX_SIZE: 5G
+   PHP_MEMORY_LIMIT: 1024M
+   APC_SHM_SIZE: 256M
+   OPCACHE_MEM_SIZE: 256M
+   CRON_PERIOD: 10m
+   MEMCACHE_LOCAL: '\OC\Memcache\Redis' # Tells Nextcloud to use Redis for local caching
+
+
 ### Backup and restore
 1. setup:
    ```bash

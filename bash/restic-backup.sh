@@ -1,6 +1,12 @@
 #!/bin/bash
 #chmod +x restic-backup.sh
 
+# Snapshot all the running images for the back
+DATE=$(date +%Y-%m-%d)
+# Save Docker images info to a dated file
+DOCKER_INFO="/srv/data/docker_images_$DATE.txt"
+docker images --format "{{.Repository}}:{{.Tag}}" > "$DOCKER_INFO"
+
 # Config
 RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt
 LOG_FILE="/home/kanasu/kserver/restic-backup.log"
