@@ -90,7 +90,9 @@ services:
     ports:
       - "7575:7575"
     volumes:
-      - /srv/data/homarr_appdata:/appdata
+      - /srv/data/homarr_configs:/app/data/configs
+      - /srv/data/homarr_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - NODE_ENV=production
     networks:
