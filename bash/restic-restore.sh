@@ -9,13 +9,13 @@ RESTORE_TARGET="/srv/restore"  # Path to restore the backup
 
 # Function to restore the latest snapshot
 restore_latest_snapshot() {
-    echo "Restoring the latest snapshot tagged 'latest'..." | tee -a "$LOG_FILE"
+    echo "Restoring the latest snapshot..." | tee -a "$LOG_FILE"
 
-    # Find the latest snapshot tagged with 'latest'
-    LATEST_SNAPSHOT=$(restic snapshots --tag latest --json | jq -r '.[-1].id')
+    # Find the latest snapshot (most recent one based on creation time)
+    LATEST_SNAPSHOT=$(restic snapshots --json | jq -r '.[-1].id')
 
     if [ -z "$LATEST_SNAPSHOT" ]; then
-        echo "No snapshot found with the 'latest' tag. Aborting restore." | tee -a "$LOG_FILE"
+        echo "No snapshot found. Aborting restore." | tee -a "$LOG_FILE"
         exit 1
     fi
 

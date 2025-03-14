@@ -1,5 +1,6 @@
 #!/bin/bash
 #chmod +x ~/restic-backup.sh
+
 # Config
 RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups
 RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt
@@ -18,16 +19,10 @@ DAY_OF_WEEK=$(date +%u)
 echo "Starting backup: $(date)" | tee -a "$LOG_FILE"
 restic backup "${BACKUP_PATHS[@]}" \
     --repo "$RESTIC_REPOSITORY" \
-    --password-file "$RESTIC_PASSWORD_FILE" \
-    --tag "weekly"
+    --password-file "$RESTIC_PASSWORD_FILE"
 
 # Retention policy
 if [ "$DAY_OF_WEEK" -eq 7 ]; then
-    # Tag last snapshot as "monthly"
-    echo "Tagging latest snapshot as monthly..." | tee -a "$LOG_FILE"
-    LATEST_SNAPSHOT=$(restic snapshots --json | jq -r '.[-1].id')
-    restic tag "$LATEST_SNAPSHOT" --add "monthly"
-
     # Prune old backups
     echo "Applying retention policy..." | tee -a "$LOG_FILE"
     restic forget \
