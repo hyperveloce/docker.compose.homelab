@@ -33,10 +33,10 @@ restore_latest_snapshot() {
     echo "Restoring snapshot $LATEST_SNAPSHOT to $RESTORE_TARGET" | tee -a "$LOG_FILE"
 
     # Restore /srv/volume
-    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET/srv/volume" --path "/srv/volume"
+    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET" --path "/srv/volume"
 
     # Restore /srv/data
-    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET/srv/data" --path "/srv/data"
+    restic restore "$LATEST_SNAPSHOT" --repo "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" --target "$RESTORE_TARGET" --path "/srv/data"
 
     if [ $? -eq 0 ]; then
         echo "Restore completed successfully." | tee -a "$LOG_FILE"
