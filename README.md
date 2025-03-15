@@ -40,6 +40,7 @@ Make sure you have the following installed:
    ```bash
    git clone https://github.com/yourusername/project-name.git
    cd project-name
+   ```
 
 2. pre-setup for docker:
    ```bash
@@ -49,11 +50,13 @@ Make sure you have the following installed:
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create mysql_user -
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create admin_password -
    sudo docker secret ls
+   ```
 
 3. environment setup:
    ```bash
    echo 'USERDIR=/home/kanasu/kserver' | sudo tee -a /etc/environment
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo tee /home/kanasu/kserver/restic-pw.txt > /dev/null
+   ```
 
 ### Nextcloud optimum config
 1. change below param for NextCloud container:
@@ -63,6 +66,7 @@ Make sure you have the following installed:
    OPCACHE_MEM_SIZE: 256M
    CRON_PERIOD: 10m
    MEMCACHE_LOCAL: '\OC\Memcache\Redis' # Tells Nextcloud to use Redis for local caching
+   ```
 
 
 ### Backup and restore
@@ -71,11 +75,13 @@ Make sure you have the following installed:
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo tee /home/kanasu/kserver/restic-pw.txt > /dev/null
    echo 'RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups"' | sudo tee -a /etc/environment
    echo 'RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt' | sudo tee -a /etc/environment
+   ```
 
 2. backup setup:
     ```bash
    restic init
    restic snapshots
+   ```
 
 2. execute backup:
    ```bash
@@ -83,13 +89,24 @@ Make sure you have the following installed:
    restic backup /srv/data
    restic backup /srv/volume
    restic snapshots
+   ```
 
 3. execute restore:
    ```bash
    restic restore latest --target /srv/restore --include /srv/data
+   ```
 
 3. cleanup:
    ```bash
    restic snapshots
    restic forget id
    restic prune
+   ```
+
+### Cert Setup
+
+1. Clone the repository:
+   ```bash
+   sudo apt install mkcert
+   mkcert kserver.dna
+   ```
