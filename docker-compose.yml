@@ -23,19 +23,21 @@ services:
     networks:
       - app_network # Connect Pi-hole to your custom network
 
-  # nginx_pm:
-  #   image: "jc21/nginx-proxy-manager:latest"
-  #   container_name: nginx_pm
-  #   restart: unless-stopped
-  #   ports:
-  #     - "80:80"
-  #     - "81:81" # Admin interface
-  #     - "443:443"
-  #   environment:
-  #     DB_SQLITE_FILE: "/data/database.sqlite"
-  #   volumes:
-  #     - /srv/data/nginxpm_data:/data
-  #     - /srv/data/nginxpm_letsencrypt:/etc/letsencrypt
+  nginx_pm:
+    image: "jc21/nginx-proxy-manager:latest"
+    container_name: nginx_pm
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81" # Admin interface
+      - "443:443"
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+    volumes:
+      - /srv/data/nginxpm_data:/data
+      - /srv/data/nginxpm_letsencrypt:/etc/letsencrypt
+    networks:
+      - app_network # Connect Pi-hole to your custom network
 
   traefik:
     image: traefik:v2.10
