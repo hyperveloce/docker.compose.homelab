@@ -44,15 +44,16 @@ Make sure you have the following installed:
 2. pre-setup for docker:
    ```bash
    docker swarm init
-   echo "{new-secure-password}" | sudo docker secret create mysql_password -
-   echo "{new-secure-password}" | sudo docker secret create mysql_root_password -
-   echo "{new-secure-password}" | sudo docker secret create mysql_user -
-   echo "{new-secure-password}" | sudo docker secret create admin_password -
+   read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create mysql_password -
+   read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create mysql_root_password -
+   read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create mysql_user -
+   read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create admin_password -
    sudo docker secret ls
 
 3. environment setup:
    ```bash
-   export USERDIR=/home/kanasu/kserver
+   echo 'USERDIR=/home/kanasu/kserver' | sudo tee -a /etc/environment
+   read -s -p "Enter a new secure password: " password && echo "$password" | sudo tee /home/kanasu/kserver/restic-pw.txt > /dev/null
 
 ### Nextcloud optimum config
 1. change below param for NextCloud container:
@@ -65,20 +66,25 @@ Make sure you have the following installed:
 
 
 ### Backup and restore
-1. setup:
+1. environment setup:
    ```bash
-   export RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups
-   export RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt
+   read -s -p "Enter a new secure password: " password && echo "$password" | sudo tee /home/kanasu/kserver/restic-pw.txt > /dev/null
+   echo 'RESTIC_REPOSITORY=/home/kanasu/kserver/restic.backups"' | sudo tee -a /etc/environment
+   echo 'RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt' | sudo tee -a /etc/environment
+
+2. backup setup:
+    ```bash
    restic init
    restic snapshots
 
-2. backup:
+2. execute backup:
    ```bash
+   sudo chmod -R 770 /srv/
    restic backup /srv/data
    restic backup /srv/volume
    restic snapshots
 
-3. restore:
+3. execute restore:
    ```bash
    restic restore latest --target /srv/restore --include /srv/data
 
