@@ -23,9 +23,9 @@ services:
     networks:
       - app_network # Connect Pi-hole to your custom network
 
-  nginx_proxy_manager:
+  nginx_pm:
     image: "jc21/nginx-proxy-manager:latest"
-    container_name: nginx_proxy_manager
+    container_name: nginx_pm
     restart: unless-stopped
     ports:
       - "80:80"
