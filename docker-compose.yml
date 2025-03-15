@@ -39,32 +39,6 @@ services:
     networks:
       - app_network # Connect Pi-hole to your custom network
 
-  traefik:
-    image: traefik:v2.10
-    container_name: traefik
-    restart: always
-    command:
-      - "--api.insecure=true" # Enable the Traefik dashboard (insecure for testing purposes)
-      - "--providers.docker=true" # Enable Docker as a provider
-      - "--entrypoints.web.address=:80" # HTTP entrypoint
-      - "--entrypoints.websecure.address=:443" # HTTPS entrypoint
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true" # Enable HTTP challenge for Let's Encrypt
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web" # Specify the entry point for ACME HTTP challenge
-      - "--certificatesresolvers.myresolver.acme.email=youremail@example.com" # Your email for Let's Encrypt
-      - "--certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme.json" # Storage for the certificates
-      - "--api.dashboard=true" # Enable the Traefik web UI/dashboard
-    ports:
-      - "80:80" # Expose HTTP port
-      - "443:443" # Expose HTTPS port
-      - "81:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock" # Allow Traefik to interact with Docker
-      - "./traefik/acme.json:/etc/traefik/acme.json" # Store ACME certificates (make sure this file is writeable)
-    labels:
-      - "traefik.enable=true"
-    networks:
-      - app_network # Connect Pi-hole to your custom network
-
   # MariaDB Service
   db:
     image: mariadb:latest
