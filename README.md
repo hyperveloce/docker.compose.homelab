@@ -110,3 +110,10 @@ Make sure you have the following installed:
    sudo apt install mkcert
    mkcert kserver.dna
    ```
+### Cert Setup
+
+2. Router dhcp and dns:
+   ```bash
+   service restart_dnsmasq
+   service restart_dhcpd
+   ```
