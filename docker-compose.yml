@@ -55,7 +55,7 @@ services:
       - /srv/data/nextcloud_config:/var/www/html/config # Docker volume for config
       - /srv/data/nextcloud_themes:/var/www/html/themes # Custom the
     depends_on:
-      - db
+      - ncdb
       - redis
     networks:
       - app_network
@@ -63,7 +63,7 @@ services:
   # MariaDB Service
   ncdb:
     image: mariadb:latest
-    container_name: mariadb
+    container_name: ncdb
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password # Change this to a strong password
@@ -97,7 +97,7 @@ services:
   #     - DATABASE_URL=postgresql://username:password@postgres:5432/immich?schema=public
   #     - TZ=Australia/Melbourne
   #   depends_on:
-  #     - postgres
+  #     - imdb
   #   networks:
   #     - app_network
   #
@@ -112,7 +112,7 @@ services:
   #     - POSTGRES_PASSWORD=password
   #     - POSTGRES_DB=immich
   #   networks:
-  # - app_network
+  #     - app_network
 
   homarr:
     image: ghcr.io/homarr-labs/homarr:latest
