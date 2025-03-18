@@ -10,7 +10,7 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "83:80"
-      - "444:443"
+      - "442:443"
     volumes:
       - /srv/data/adguard.work:/opt/adguardhome/work
       - /srv/data/adguard.conf:/opt/adguardhome/conf
@@ -84,35 +84,35 @@ services:
     networks:
       - app_network
 
-  # immich:
-  #   image: ghcr.io/immich-app/immich-server:latest
-  #   container_name: immich
-  #   restart: unless-stopped
-  #   ports:
-  #     - "3000:3000" # Adjust to your desired port
-  #   volumes:
-  #     - /srv/data/immich.data:/app/data
-  #     - /srv/data/immich.config:/app/config
-  #   environment:
-  #     - DATABASE_URL=postgresql://username:password@postgres:5432/immich?schema=public
-  #     - TZ=Australia/Melbourne
-  #   depends_on:
-  #     - imdb
-  #   networks:
-  #     - app_network
-  #
-  # imdb:
-  #   image: postgres:13
-  #   container_name: immich_db
-  #   restart: unless-stopped
-  #   volumes:
-  #     - /srv/volume/immichdb_data:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_USER=username
-  #     - POSTGRES_PASSWORD=password
-  #     - POSTGRES_DB=immich
-  #   networks:
-  #     - app_network
+  immich:
+    image: ghcr.io/immich-app/immich-server:latest
+    container_name: immich
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # Adjust to your desired port
+    volumes:
+      - /srv/data/immich.data:/app/data
+      - /srv/data/immich.config:/app/config
+    environment:
+      - DATABASE_URL=postgresql://kanasu:$(cat /run/secrets/mysql_password)@postgres:5432/immich?schema=public
+      - TZ=Australia/Melbourne
+    depends_on:
+      - imdb
+    networks:
+      - app_network
+
+  imdb:
+    image: postgres:13
+    container_name: immich_db
+    restart: unless-stopped
+    volumes:
+      - /srv/volume/immichdb_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=kanasu
+      - POSTGRES_PASSWORD=/run/secrets/mysql_password
+      - POSTGRES_DB=immich
+    networks:
+      - app_network
 
   homarr:
     image: ghcr.io/homarr-labs/homarr:latest
