@@ -76,41 +76,64 @@ services:
       - app_network
 
   # Redis Service for Nextcloud Caching
-  redis:
+  nc_redis:
     image: redis:alpine
-    container_name: redis
+    container_name: nc_redis
     restart: unless-stopped
     command: ["redis-server", "--requirepass", "redispassword"] # Set a password for Redis
     networks:
       - app_network
 
-  immich:
+  immich-server:
     image: ghcr.io/immich-app/immich-server:latest
-    container_name: immich
+    container_name: immich_server
     restart: unless-stopped
     ports:
-      - "3000:3000" # Adjust to your desired port
+      - "3000:3000"
     volumes:
-      - /srv/data/immich.data:/app/data
-      - /srv/data/immich.config:/app/config
+      - /srv/data/immich_data:/app/data
+      - /srv/data/immich_config:/app/config
     environment:
-      - DATABASE_URL=postgresql://kanasu:$(cat /run/secrets/mysql_password)@postgres:5432/immich?schema=public
+      - DATABASE_URL=postgresql://kanasu:your_password_here@im_db:5432/immich?schema=public
+      - REDIS_URL=redis://im_redis:6379
       - TZ=Australia/Melbourne
     depends_on:
-      - imdb
+      - im_db
+      - im_redis
     networks:
       - app_network
 
-  imdb:
+  immich-microservice:
+    image: ghcr.io/immich-app/immich-microservice:latest
+    container_name: immich_microservice
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://kanasu:your_password_here@im_db:5432/immich?schema=public
+      - REDIS_URL=redis://im_redis:6379
+      - TZ=Australia/Melbourne
+    depends_on:
+      - im_db
+      - im_redis
+    networks:
+      - app_network
+
+  im_db:
     image: postgres:13
-    container_name: immich_db
+    container_name: im_db
     restart: unless-stopped
     volumes:
       - /srv/volume/immichdb_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=kanasu
-      - POSTGRES_PASSWORD=/run/secrets/mysql_password
-      - POSTGRES_DB=immich
+      - POSTGRES_PASSWORD=your_password_here
+      - POSTGRES_DB=im_db
+    networks:
+      - app_network
+
+  im_redis:
+    image: redis:6
+    container_name: im_redis
+    restart: unless-stopped
     networks:
       - app_network
 
