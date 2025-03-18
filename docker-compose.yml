@@ -11,6 +11,7 @@ services:
       - "53:53/udp"
       - "83:80"
       - "442:443"
+      - "3000:3000/tcp"
     volumes:
       - /srv/data/adguard.work:/opt/adguardhome/work
       - /srv/data/adguard.conf:/opt/adguardhome/conf
