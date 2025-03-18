@@ -210,6 +210,45 @@ services:
     networks:
       - app_network
 
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:latest
+    restart: unless-stopped
+    network_mode: host # Required for discovery and integrations
+    volumes:
+      - /srv/data/homeassistant_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - ha_mariadb
+    environment:
+      - TZ=Australia/Melbourne
+
+  ha_mariadb:
+    container_name: ha_mariadb
+    image: mariadb:latest
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password
+      MYSQL_DATABASE: homeassistant
+      MYSQL_USER: homeassistant
+      MYSQL_PASSWORD: /run/secrets/mysql_password
+    volumes:
+      - /srv/volume/mariadb_data:/var/lib/mysql
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=ha_mariadb
+      - MYSQL_ROOT_PASSWORD=/run/secrets/mysql_root_password
+    depends_on:
+      - ha_mariadb
+
 # Volumes for persistent data
 volumes:
   nextclouddb_data:
