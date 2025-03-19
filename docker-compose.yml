@@ -310,7 +310,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3001:3000" # Grafana UI
+      - "3333:3000" # Grafana UI
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin # Set Grafana admin password
     volumes:
@@ -318,11 +318,12 @@ services:
     restart: unless-stopped
     networks:
       - app_network
+
   cadvisor:
     image: google/cadvisor:latest
     container_name: cadvisor
     ports:
-      - "808:8080" # cAdvisor UI (optional)
+      - "8888:8080" # cAdvisor UI (optional)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
