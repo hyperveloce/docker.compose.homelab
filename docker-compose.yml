@@ -320,7 +320,7 @@ services:
       - app_network
 
   cadvisor:
-    image: google/cadvisor:latest
+    image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     ports:
       - "8888:8080" # cAdvisor UI (optional)
