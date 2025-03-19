@@ -214,7 +214,8 @@ services:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:latest
     restart: unless-stopped
-    network_mode: host # Required for discovery and integrations
+    ports:
+      - "8123:8123"
     volumes:
       - /srv/data/homeassistant_config:/config
       - /etc/localtime:/etc/localtime:ro
@@ -222,6 +223,8 @@ services:
       - ha_mariadb
     environment:
       - TZ=Australia/Melbourne
+    networks:
+      - app_network
 
   ha_mariadb:
     container_name: ha_mariadb
