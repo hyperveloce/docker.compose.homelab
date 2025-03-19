@@ -106,7 +106,7 @@ services:
     ports:
       - "9000:9000" # Port for the Portainer web UI
     volumes:
-      - /srv/volume/portainer_data:/data
+      - /srv/data/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - app_network
@@ -118,7 +118,7 @@ services:
     ports:
       - "89:80" # Adjust to your preferred port
     volumes:
-      - /srv/volume/filebrowser_database:/database
+      - /srv/volume/filebrowserdb_data:/database
       - /srv/data/filebrowser_files:/srv
     environment:
       - PUID=1000 # Adjust to your desired user ID
@@ -235,7 +235,7 @@ services:
       MYSQL_USER: homeassistant
       MYSQL_PASSWORD: /run/secrets/mysql_password
     volumes:
-      - /srv/volume/mariadb_data:/var/lib/mysql
+      - /srv/volume/homeassistantdb_data:/var/lib/mysql
     networks:
       - app_network
 
@@ -300,8 +300,8 @@ services:
     ports:
       - "9090:9090" # Prometheus UI
     volumes:
-      - /srv/data/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Configuration file
-      - prometheus_data:/prometheus
+      - /srv/data/prometheus_data/prometheus.yml:/etc/prometheus/prometheus.yml # Configuration file
+      - /srv/data/prometheus_data:/prometheus
     restart: unless-stopped
     networks:
       - app_network
@@ -325,8 +325,10 @@ volumes:
     name: nextclouddb_data
   immichdb_data:
     name: immichdb_data
-  portainer_data:
-    name: portainer_data
+  homeassistantdb_data:
+    name: homeassistantdb_data
+  filebrowserdb_data:
+    name: filebrowserdb_data
 
 # Network for both containers to communicate
 networks:
