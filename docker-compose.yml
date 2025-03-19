@@ -318,6 +318,14 @@ services:
     restart: unless-stopped
     networks:
       - app_network
+  cadvisor:
+    image: google/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "808:8080" # cAdvisor UI (optional)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
 
 # Volumes for persistent data
 volumes:
