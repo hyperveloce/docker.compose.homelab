@@ -117,3 +117,9 @@ Make sure you have the following installed:
    service restart_dnsmasq
    service restart_dhcpd
    ```
+
+### NextCloud manual update
+1. Clone the repository:
+   ```bash
+   sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ upgrade
+   ```

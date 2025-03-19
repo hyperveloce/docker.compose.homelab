@@ -214,6 +214,8 @@ services:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:latest
     restart: unless-stopped
+    ports:
+      - "8123:8123"
     network_mode: host # Required for discovery and integrations
     volumes:
       - /srv/data/homeassistant_config:/config
