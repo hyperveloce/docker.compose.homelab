@@ -42,7 +42,7 @@ services:
     restart: always
     command: tunnel --no-autoupdate run
     volumes:
-      - cloudflared-config:/etc/cloudflared
+      - /srv/data/cloudflared-config:/etc/cloudflared
     environment:
       - TUNNEL_ID=${TUNNEL_ID}
 
