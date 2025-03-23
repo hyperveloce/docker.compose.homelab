@@ -44,7 +44,7 @@ services:
     volumes:
       - cloudflared-config:/etc/cloudflared
     environment:
-      - TUNNEL_ID=eyJhIjoiNDJlOTRjM2U0ODE5OGE4YzhjNTAwNTczZThhODI5NTkiLCJ0IjoiNjZlODdhMzUtOWMwMy00OGFjLWI0MDctZjZiNjQwMWE1MTYyIiwicyI6Ik5EbGpaVGM1TURjdFpqQmpPQzAwWm1FMkxXRXlaR010TldOaU9UVTNPRFF3TldSaCJ9
+      - TUNNEL_ID=${TUNNEL_ID}
 
   # MariaDB Service
   nc_db:
