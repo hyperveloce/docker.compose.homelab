@@ -36,6 +36,16 @@ services:
     networks:
       - app_network # Connect Pi-hole to your custom network
 
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: always
+    command: tunnel --no-autoupdate run
+    volumes:
+      - cloudflared-config:/etc/cloudflared
+    environment:
+      - TUNNEL_ID=eyJhIjoiNDJlOTRjM2U0ODE5OGE4YzhjNTAwNTczZThhODI5NTkiLCJ0IjoiNjZlODdhMzUtOWMwMy00OGFjLWI0MDctZjZiNjQwMWE1MTYyIiwicyI6Ik5EbGpaVGM1TURjdFpqQmpPQzAwWm1FMkxXRXlaR010TldOaU9UVTNPRFF3TldSaCJ9
+
   # MariaDB Service
   nc_db:
     image: mariadb:latest

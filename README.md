@@ -67,8 +67,25 @@ Make sure you have the following installed:
    CRON_PERIOD: 10m
    MEMCACHE_LOCAL: '\OC\Memcache\Redis' # Tells Nextcloud to use Redis for local caching
    ```
-
-
+2. Setup the following param for proxy
+  ```bash
+  proxy_set_header Host $host;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto https;
+  proxy_set_header X-Frame-Options SAMEORIGIN;
+  proxy_hide_header X-Powered-By;
+  ```
+  2. Setup the following param for proxy
+  ```bash
+  'trusted_proxies' => ['172.21.0.7'],
+  'overwriteprotocol' => 'https',
+  'trusted_domains' =>
+  array (
+    0 => '192.168.50.201:8080',
+    1 => 'dna-nc.duckdns.org',
+  ),
+  ```
 ### Backup and restore
 1. environment setup:
    ```bash
@@ -122,4 +139,18 @@ Make sure you have the following installed:
 1. Clone the repository:
    ```bash
    sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ upgrade
+   ```
+
+### Home Assistant setup
+1. Clone the repository:
+   ```
+   http:
+     use_x_forwarded_for: true
+     trusted_proxies:
+       - 172.21.0.18
+   ```
+  https://medium.com/@life-is-short-so-enjoy-it/homeassistant-reverse-proxy-with-nginx-two-issues-i-faced-c7772ad0446c
+
+   ```bash
+   docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx_pm
    ```
