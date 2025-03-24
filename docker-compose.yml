@@ -2,23 +2,45 @@ version: "3.8"
 
 services:
   # Pi-hole Service
-  adguard:
-    image: adguard/adguardhome:latest
-    container_name: adguard_home
-    restart: unless-stopped
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "83:80"
-      - "442:443"
-      - "3000:3000/tcp"
-    volumes:
-      - /srv/data/adguard.work:/opt/adguardhome/work
-      - /srv/data/adguard.conf:/opt/adguardhome/conf
+  # adguard:
+  #   image: adguard/adguardhome:latest
+  #   container_name: adguard_home
+  #   restart: unless-stopped
+  #   ports:
+  #     - "53:53/tcp"
+  #     - "53:53/udp"
+  #     - "83:80"
+  #     - "442:443"
+  #     - "3000:3000/tcp"
+  #   volumes:
+  #     - /srv/data/adguard.work:/opt/adguardhome/work
+  #     - /srv/data/adguard.conf:/opt/adguardhome/conf
+  #   environment:
+  #     - TZ=Australia/Melbourne
+  #   networks:
+  #     - app_network # Connect Pi-hole to your custom network
+
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
     environment:
       - TZ=Australia/Melbourne
+      - WEBPASSWORD=admin # Replace with a strong password for the Pi-hole web interface
+      - PIHOLE_DNS_=8.8.8.8 # Upstream DNS servers (Google DNS, for example)
+      - DNSMASQ_LISTENING=all # Listen on all interfaces
+    volumes:
+      - /srv/data/pihole_config:/etc/pihole # Persist Pi-hole configuration
+      - /srv/data/pihole_dnsmasq.d:/etc/dnsmasq.d # Persist dnsmasq configuration
+    ports:
+      - "53:53/tcp" # DNS port
+      - "53:53/udp" # DNS port for UDP
+      - "83:80" # Web interface port
+      - "442:443" # HTTPS (if needed)
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN # Needed for network configuration
     networks:
-      - app_network # Connect Pi-hole to your custom network
+      - app_network
 
   nginx_pm:
     image: "jc21/nginx-proxy-manager:latest"
