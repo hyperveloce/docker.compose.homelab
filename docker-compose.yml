@@ -331,6 +331,8 @@ services:
     volumes:
       - /srv/data/grafana_data:/var/lib/grafana
     restart: unless-stopped
+    depends_on:
+      - prometheus
     networks:
       - app_network
 
