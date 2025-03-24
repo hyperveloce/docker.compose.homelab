@@ -310,6 +310,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
+    user: "1001:1001"
     ports:
       - "9090:9090" # Prometheus UI
     volumes:
