@@ -274,6 +274,7 @@ services:
       - SYS_PTRACE
     environment:
       - TZ=Australia/Melbourne
+      - NETDATA_PROMETHEUS=1
       #- PUID=1000
       #- PGID=1000
     ports:
