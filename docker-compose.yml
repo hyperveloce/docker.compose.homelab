@@ -17,24 +17,24 @@ services:
     networks:
       - app_network # Connect Pi-hole to your custom network
 
-  cloudflared:
-    # image: cloudflare/cloudflared:latest
-    image: ghcr.io/wisdomsky/cloudflared-web:latest
-    container_name: cloudflared
+  cloudflares:
+    container_name: cloudflare
+    image: cloudflare/cloudflared:latest
     restart: unless-stopped
+    command: tunnel run --token ${TUNNEL_ID}
+    network_mode: "host"
+    # image: cloudflare/cloudflared:latest
     # command: tunnel --no-autoupdate run
     # volumes:
-    #   - /srv/data/cloudflared-config:/etc/cloudflared
     volumes:
       - /srv/data/cloudflared-config:/config
+      - /srv/data/cloudflared-config:/etc/cloudflared
     # env_file:
     #   - .env
     # environment:
     #   - TUNNEL_ID=${TUNNEL_ID}
-    environment:
-      WEBUI_PORT: 1111
-    networks:
-      - app_network
+    # networks:
+    #   - app_network
 
   # MariaDB Service
   nc_db:
