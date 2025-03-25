@@ -29,6 +29,8 @@ services:
     #   - .env
     # environment:
     #   - TUNNEL_ID=${TUNNEL_ID}
+    environment:
+      WEBUI_PORT: 1111
     networks:
       - app_network
 
