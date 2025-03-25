@@ -19,12 +19,14 @@ services:
 
   cloudflared:
     # image: cloudflare/cloudflared:latest
-    image: wisdomsky/cloudflared-web:latest
+    image: ghcr.io/wisdomsky/cloudflared-web:latest
     container_name: cloudflared
     restart: unless-stopped
     # command: tunnel --no-autoupdate run
     # volumes:
     #   - /srv/data/cloudflared-config:/etc/cloudflared
+    volumes:
+      - /srv/data/cloudflared-config:/config
     # env_file:
     #   - .env
     # environment:
