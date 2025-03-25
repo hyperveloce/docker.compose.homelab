@@ -21,10 +21,10 @@ services:
     # image: cloudflare/cloudflared:latest
     image: wisdomsky/cloudflared-web:latest
     container_name: cloudflared
-    restart: always
+    restart: unless-stopped
     # command: tunnel --no-autoupdate run
-    volumes:
-      - /srv/data/cloudflared-config:/etc/cloudflared
+    # volumes:
+    #   - /srv/data/cloudflared-config:/etc/cloudflared
     # env_file:
     #   - .env
     # environment:
