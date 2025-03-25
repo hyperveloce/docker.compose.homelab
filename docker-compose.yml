@@ -24,8 +24,8 @@ services:
     command: tunnel --no-autoupdate run
     volumes:
       - /srv/data/cloudflared-config:/etc/cloudflared
-    environment:
-      - TUNNEL_ID=${TUNNEL_ID}
+    env_file:
+      - .env
 
   # MariaDB Service
   nc_db:
