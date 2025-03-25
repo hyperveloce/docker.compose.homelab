@@ -28,6 +28,8 @@ services:
       - .env
     environment:
       - TUNNEL_ID=${TUNNEL_ID}
+    networks:
+      - app_network
 
   # MariaDB Service
   nc_db:
