@@ -26,6 +26,8 @@ services:
       - /srv/data/cloudflared-config:/etc/cloudflared
     env_file:
       - .env
+    environment:
+      - TUNNEL_ID=${TUNNEL_ID}
 
   # MariaDB Service
   nc_db:
