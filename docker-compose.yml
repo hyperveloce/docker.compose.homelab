@@ -15,7 +15,7 @@ services:
       - /srv/data/nginxpm_data:/data
       - /srv/data/nginxpm_letsencrypt:/etc/letsencrypt
     networks:
-      - app_network # Connect Pi-hole to your custom network
+      - app_network
 
   cloudflares:
     container_name: cloudflare
@@ -108,22 +108,6 @@ services:
     volumes:
       - /srv/data/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - app_network
-
-  filebrowser:
-    image: filebrowser/filebrowser:latest
-    container_name: filebrowser
-    restart: unless-stopped
-    ports:
-      - "89:80"
-    volumes:
-      - /srv/volume/filebrowserdb_data:/database
-      - /srv/data/filebrowser_files:/srv
-    environment:
-      - PUID=1000 
-      - PGID=1000
-      - TZ=Australia/Melbourne
     networks:
       - app_network
 
@@ -341,8 +325,6 @@ volumes:
     name: immichdb_data
   homeassistantdb_data:
     name: homeassistantdb_data
-  filebrowserdb_data:
-    name: filebrowserdb_data
 
 # Network for both containers to communicate
 networks:
