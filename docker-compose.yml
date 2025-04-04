@@ -327,8 +327,6 @@ services:
     container_name: open-webui
     volumes:
       - /mnt/debian.data/open-webui_data:/app/backend/data
-    depends_on:
-      - ollama
     ports:
       - "3000:8080" # UI on 3000
     environment:
