@@ -95,7 +95,7 @@ services:
       - /srv/data/homarr_appdata:/appdata
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - SECRET_ENCRYPTION_KEY=2bfd284f39d01c07913fd2b8a8fe43bbc9aaad3ae6c2983aa38c7ca49e2bd4c7
+      - SECRET_ENCRYPTION_KEY=2bfd284f39d01c07913fd2b8a8fe43bbc9aaad3ae6c2983aa38c7ca49e2bd4c7 #need to create new
     networks:
       - app_network
 
@@ -317,6 +317,29 @@ services:
     networks:
       - app_network
 
+  open-webui:
+    build:
+      context: .
+      args:
+        OLLAMA_BASE_URL: "/ollama"
+      dockerfile: Dockerfile
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - /mnt/debian.data/open-webui_data:/app/backend/data
+    depends_on:
+      - ollama
+    ports:
+      - "3000:8080" # UI on 3000
+    environment:
+      - "OLLAMA_BASE_URL=http://192.168.50.203:11434"
+      - "WEBUI_SECRET_KEY="
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - app_network
+
   it_tools:
     container_name: it_tools
     image: corentinth/it-tools:latest
@@ -334,7 +357,10 @@ services:
     container_name: cloudflared
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
-    command: tunnel --no-autoupdate run --token eyJhIjoiNDJlOTRjM2U0ODE5OGE4YzhjNTAwNTczZThhODI5NTkiLCJ0IjoiZmIyODAwOWQtZWI5Yi00MWNhLTlkNDUtYWM3YzgyMmRkMjkyIiwicyI6Ik9EWmpNalkwWTJJdFpqTmlNUzAwT0ROa0xUZzNORGt0TkRRd1ptTmxabVUzTkdZNSJ9
+    command: tunnel --no-autoupdate run --token /run/secrets/cloudflare_token
+    # command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    #read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create cloudflare_token -
+    #eyJhIjoiNDJlOTRjM2U0ODE5OGE4YzhjNTAwNTczZThhODI5NTkiLCJ0IjoiZmIyODAwOWQtZWI5Yi00MWNhLTlkNDUtYWM3YzgyMmRkMjkyIiwicyI6Ik9EWmpNalkwWTJJdFpqTmlNUzAwT0ROa0xUZzNORGt0TkRRd1ptTmxabVUzTkdZNSJ9
     networks:
       - app_network
 
