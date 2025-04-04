@@ -317,6 +317,27 @@ services:
     networks:
       - app_network
 
+  it_tools:
+    container_name: it_tools
+    image: corentinth/it-tools:latest
+    restart: unless-stopped
+    ports:
+      - "8087:80"
+    environment:
+      - TZ=Australia/Melbourne
+    volumes:
+      - /srv/data/it_tools_data:/app/data
+    networks:
+      - app_network
+
+  cloudflared:
+    container_name: cloudflared
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token eyJhIjoiNDJlOTRjM2U0ODE5OGE4YzhjNTAwNTczZThhODI5NTkiLCJ0IjoiZmIyODAwOWQtZWI5Yi00MWNhLTlkNDUtYWM3YzgyMmRkMjkyIiwicyI6Ik9EWmpNalkwWTJJdFpqTmlNUzAwT0ROa0xUZzNORGt0TkRRd1ptTmxabVUzTkdZNSJ9
+    networks:
+      - app_network
+
 # Volumes for persistent data
 volumes:
   nextclouddb_data:
