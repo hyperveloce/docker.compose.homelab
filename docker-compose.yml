@@ -330,11 +330,9 @@ services:
   cloudflared:
     container_name: cloudflared
     image: cloudflare/cloudflared:latest
-    secrets:
-      - cloudflare_token
     restart: unless-stopped
     command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN}
-    # command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    # command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN}
     # read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create cloudflare_token -
     #eyJhIjoiNDJlOTRjM2U0ODE5OGE4YzhjNTAwNTczZThhODI5NTkiLCJ0IjoiZmIyODAwOWQtZWI5Yi00MWNhLTlkNDUtYWM3YzgyMmRkMjkyIiwicyI6Ik9EWmpNalkwWTJJdFpqTmlNUzAwT0ROa0xUZzNORGt0TkRRd1ptTmxabVUzTkdZNSJ9
     networks:
