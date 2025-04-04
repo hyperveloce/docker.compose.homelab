@@ -17,25 +17,6 @@ services:
     networks:
       - app_network
 
-  cloudflares:
-    container_name: cloudflare
-    image: cloudflare/cloudflared:latest
-    restart: unless-stopped
-    command: tunnel run --token ${TUNNEL_ID}
-    network_mode: "host"
-    # image: cloudflare/cloudflared:latest
-    # command: tunnel --no-autoupdate run
-    # volumes:
-    volumes:
-      - /srv/data/cloudflared-config:/config
-      - /srv/data/cloudflared-config:/etc/cloudflared
-    # env_file:
-    #   - .env
-    # environment:
-    #   - TUNNEL_ID=${TUNNEL_ID}
-    # networks:
-    #   - app_network
-
   # MariaDB Service
   nc_db:
     image: mariadb:latest
@@ -349,13 +330,19 @@ services:
   cloudflared:
     container_name: cloudflared
     image: cloudflare/cloudflared:latest
+    secrets:
+      - cloudflare_token
     restart: unless-stopped
-    # command: tunnel --no-autoupdate run --token /run/secrets/cloudflare_token
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run --token /run/secrets/cloudflare_token
+    # command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     # read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create cloudflare_token -
     #eyJhIjoiNDJlOTRjM2U0ODE5OGE4YzhjNTAwNTczZThhODI5NTkiLCJ0IjoiZmIyODAwOWQtZWI5Yi00MWNhLTlkNDUtYWM3YzgyMmRkMjkyIiwicyI6Ik9EWmpNalkwWTJJdFpqTmlNUzAwT0ROa0xUZzNORGt0TkRRd1ptTmxabVUzTkdZNSJ9
     networks:
       - app_network
+
+secrets:
+  db_password:
+    external: true
 
 # Volumes for persistent data
 volumes:
