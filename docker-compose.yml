@@ -326,7 +326,7 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     volumes:
-      - /mnt/debian.data/open-webui_data:/app/backend/data
+      - /srv/data/open-webui_data:/app/backend/data
     ports:
       - "3000:8080" # UI on 3000
     environment:
