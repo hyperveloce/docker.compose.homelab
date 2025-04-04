@@ -49,6 +49,7 @@ Make sure you have the following installed:
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create mysql_root_password -
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create mysql_user -
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create admin_password -
+   read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create cloudflare_token -
    sudo docker secret ls
    ```
 
