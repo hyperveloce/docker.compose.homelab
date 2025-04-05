@@ -44,6 +44,9 @@ Make sure you have the following installed:
 
 2. pre-setup for docker:
    ```bash
+
+   ln -s /srv/data/secrets.env /home/kanasu/git.hyperveloce/docker.compose.homelab/.env
+
    docker swarm init
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create mysql_password -
    read -s -p "Enter a new secure password: " password && echo "$password" | sudo docker secret create mysql_root_password -
