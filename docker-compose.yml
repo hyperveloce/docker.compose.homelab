@@ -39,6 +39,7 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80" # Exposes Nextcloud on port 8080
+      - "8443:443"
     environment:
       MYSQL_PASSWORD: /run/secrets/mysql_password # Same as the DB password
       MYSQL_DATABASE: nextcloud
