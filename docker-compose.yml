@@ -332,6 +332,8 @@ services:
     container_name: cloudflared
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
+    volumes:
+      - /srv/data/cloudflared_config:/root/.cloudflared
     command: tunnel --no-autoupdate run --no-tls-verify --token ${CLOUDFLARE_TOKEN}
     networks:
       - app_network
