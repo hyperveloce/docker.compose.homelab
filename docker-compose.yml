@@ -37,9 +37,6 @@ services:
     image: nextcloud:latest
     container_name: nextcloud
     restart: unless-stopped
-    ports:
-      - "8080:80" # Exposes Nextcloud on port 8080
-      - "8443:443"
     environment:
       MYSQL_PASSWORD: /run/secrets/mysql_password # Same as the DB password
       MYSQL_DATABASE: nextcloud
@@ -71,8 +68,6 @@ services:
     image: ghcr.io/homarr-labs/homarr:latest
     container_name: homarr
     restart: unless-stopped
-    ports:
-      - "7575:7575"
     volumes:
       - /srv/data/homarr_appdata:/appdata
       - /var/run/docker.sock:/var/run/docker.sock
@@ -85,8 +80,6 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     restart: unless-stopped
-    ports:
-      - "9000:9000" # Port for the Portainer web UI
     volumes:
       - /srv/data/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -179,8 +172,6 @@ services:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:latest
     restart: unless-stopped
-    ports:
-      - "8123:8123"
     volumes:
       - /srv/data/homeassistant_config:/config
       - /etc/localtime:/etc/localtime:ro
@@ -195,8 +186,6 @@ services:
     container_name: ha_mariadb
     image: mariadb:latest
     restart: unless-stopped
-    ports:
-      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password
       MYSQL_DATABASE: homeassistant
@@ -211,8 +200,6 @@ services:
     container_name: phpmyadmin
     image: phpmyadmin/phpmyadmin
     restart: unless-stopped
-    ports:
-      - "8081:80"
     environment:
       - PMA_HOST=ha_mariadb
       - MYSQL_ROOT_PASSWORD=/run/secrets/mysql_root_password
@@ -232,8 +219,6 @@ services:
       - NETDATA_PROMETHEUS=1
       #- PUID=1000
       #- PGID=1000
-    ports:
-      - 19999:19999
     volumes:
       - /srv/data/netdata_config:/etc/netdata
       - /proc:/host/proc:ro
@@ -246,8 +231,6 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     user: "1001:1001"
-    ports:
-      - "9090:9090" # Prometheus UI
     volumes:
       - /srv/data/prometheus_data/prometheus.yml:/etc/prometheus/prometheus.yml # Configuration file
       - /srv/data/prometheus_data:/prometheus
@@ -258,8 +241,6 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
-    ports:
-      - "3333:3000" # Grafana UI
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin # Set Grafana admin password
     volumes:
@@ -273,8 +254,6 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
-    ports:
-      - "8888:8080" # cAdvisor UI (optional)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
@@ -286,8 +265,6 @@ services:
     container_name: open-webui
     volumes:
       - /srv/data/open-webui_data:/app/backend/data
-    ports:
-      - "3000:8080" # UI on 3000
     environment:
       - "OLLAMA_BASE_URL=http://192.168.50.203:11434"
       - "WEBUI_SECRET_KEY="
@@ -301,8 +278,6 @@ services:
     container_name: it_tools
     image: corentinth/it-tools:latest
     restart: unless-stopped
-    ports:
-      - "8087:80"
     environment:
       - TZ=Australia/Melbourne
     volumes:
