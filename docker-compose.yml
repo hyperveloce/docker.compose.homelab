@@ -102,9 +102,7 @@ services:
     # depends_on:
     #   - immich_redis
     #   - immich_postgres
-    restart: always
-    healthcheck:
-      disable: false
+    restart: no
     networks:
       - app_network
 
