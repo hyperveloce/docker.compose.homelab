@@ -99,9 +99,9 @@ services:
       - .env
     ports:
       - "2283:2283"
-    depends_on:
-      - redis
-      - database
+    # depends_on:
+    #   - immich_redis
+    #   - immich_postgres
     restart: always
     healthcheck:
       disable: false
