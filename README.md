@@ -142,7 +142,7 @@ Make sure you have the following installed:
 ### NextCloud manual update
 1. Clone the repository:
    ```bash
-   sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ upgrade
+   sudo docker exec --user www-data -it nextcloud php occ upgrade
    ```
 
 ### Home Assistant setup
