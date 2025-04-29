@@ -294,6 +294,7 @@ services:
       - app_network
 
   photoprism:
+    container_name: photoprism
     ## Use photoprism/photoprism:preview for testing preview builds:
     image: photoprism/photoprism:latest
     ## Don't enable automatic restarts until PhotoPrism has been properly configured and tested!
