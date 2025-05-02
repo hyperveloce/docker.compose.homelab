@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+  ### PROXY
   nginx_pm:
     image: "jc21/nginx-proxy-manager:latest"
     container_name: nginx_pm
@@ -17,33 +18,46 @@ services:
     networks:
       - app_network
 
-  # MariaDB Service
-  nc_db:
-    image: mariadb:latest
-    container_name: nc_db
+  ### DASHBOARD HOMARR
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:latest
+    container_name: homarr
     restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password # Change this to a strong password
-      MYSQL_DATABASE: nextcloud
-      MYSQL_USER: nextcloud
-      MYSQL_PASSWORD: /run/secrets/mysql_password # Change this to a strong password
     volumes:
-      - /srv/volume/nextclouddb_data:/var/lib/mysql
+      - /srv/data/homarr_appdata:/appdata
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SECRET_ENCRYPTION_KEY=2bfd284f39d01c07913fd2b8a8fe43bbc9aaad3ae6c2983aa38c7ca49e2bd4c7 #need to create new
     networks:
       - app_network
 
-  # Nextcloud Service
+  ### CHATGPT
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - /srv/data/open-webui_data:/app/backend/data
+    environment:
+      - "OLLAMA_BASE_URL=http://192.168.50.203:11434"
+      - "WEBUI_SECRET_KEY="
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  ### NEXTCLOUD
   nextcloud:
     image: nextcloud:latest
     container_name: nextcloud
     restart: unless-stopped
     environment:
-      MYSQL_PASSWORD: /run/secrets/mysql_password # Same as the DB password
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Same as the DB password
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
       MYSQL_HOST: nc_db
       REDIS_HOST: nc_redis
-      REDIS_HOST_PASSWORD: redispassword # You can change this password
+      REDIS_HOST_PASSWORD: ${REDIS_PASSWORD} # You can change this password
       REDIS_PORT: 6379
     volumes:
       - /srv/data/nextcloud_data:/var/www/html/data # Bind mount for user data
@@ -55,24 +69,26 @@ services:
     networks:
       - app_network
 
+  nc_db:
+    image: mariadb:latest
+    container_name: nc_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # Change this to a strong password
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Change this to a strong password
+    volumes:
+      - /srv/volume/nextclouddb_data:/var/lib/mysql
+    networks:
+      - app_network
+
   # Redis Service for Nextcloud Caching
   nc_redis:
     image: redis:alpine
     container_name: nc_redis
     restart: unless-stopped
     command: ["redis-server", "--requirepass", "redispassword"] # Set a password for Redis
-    networks:
-      - app_network
-
-  homarr:
-    image: ghcr.io/homarr-labs/homarr:latest
-    container_name: homarr
-    restart: unless-stopped
-    volumes:
-      - /srv/data/homarr_appdata:/appdata
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - SECRET_ENCRYPTION_KEY=2bfd284f39d01c07913fd2b8a8fe43bbc9aaad3ae6c2983aa38c7ca49e2bd4c7 #need to create new
     networks:
       - app_network
 
@@ -86,17 +102,16 @@ services:
     networks:
       - app_network
 
+  ### HOMEASSISTANT
   immich-server:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     environment:
-      - TZ=UTC
+      - TZ=Australia/Melbourne
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/timezone:/etc/timezone:ro # Sync host timezone
       - /etc/localtime:/etc/localtime:ro
-    env_file:
-      - .env
     ports:
       - "2283:2283"
     depends_on:
@@ -116,24 +131,22 @@ services:
     #   service: cpu # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
     volumes:
       - /srv/volume/im_model-cache:/cache
-    env_file:
-      - .env
-    restart: always
+    restart: unless-stopped
     healthcheck:
       disable: false
     networks:
       - app_network
 
-  redis:
+  immich_redis:
     container_name: immich_redis
     image: docker.io/redis:6.2-alpine@sha256:148bb5411c184abd288d9aaed139c98123eeb8824c5d3fce03cf721db58066d8
     healthcheck:
       test: redis-cli ping || exit 1
-    restart: always
+    restart: unless-stopped
     networks:
       - app_network
 
-  database:
+  immich_postgres:
     container_name: immich_postgres
     image: docker.io/tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:739cdd626151ff1f796dc95a6591b55a714f341c737e27f045019ceabf8e8c52
     environment:
@@ -162,10 +175,11 @@ services:
       -c max_wal_size=2GB
       -c shared_buffers=512MB
       -c wal_compression=on
-    restart: always
+    restart: unless-stopped
     networks:
       - app_network
 
+  ### HOMEASSISTANT
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:latest
@@ -185,10 +199,10 @@ services:
     image: mariadb:latest
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: homeassistant
       MYSQL_USER: homeassistant
-      MYSQL_PASSWORD: /run/secrets/mysql_password
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - /srv/volume/homeassistantdb_data:/var/lib/mysql
     networks:
@@ -200,12 +214,13 @@ services:
     restart: unless-stopped
     environment:
       - PMA_HOST=ha_mariadb
-      - MYSQL_ROOT_PASSWORD=/run/secrets/mysql_root_password
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     depends_on:
       - ha_mariadb
     networks:
       - app_network
 
+  ### MONITORING
   netdata:
     container_name: netdata
     image: titpetric/netdata
@@ -258,20 +273,7 @@ services:
     networks:
       - app_network
 
-  open-webui:
-    image: ghcr.io/open-webui/open-webui:main
-    container_name: open-webui
-    volumes:
-      - /srv/data/open-webui_data:/app/backend/data
-    environment:
-      - "OLLAMA_BASE_URL=http://192.168.50.203:11434"
-      - "WEBUI_SECRET_KEY="
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    restart: unless-stopped
-    networks:
-      - app_network
-
+  ### SUPPORT TOOLS
   it_tools:
     container_name: it_tools
     image: corentinth/it-tools:latest
@@ -292,139 +294,6 @@ services:
     command: tunnel --no-autoupdate run --no-tls-verify --token ${CLOUDFLARE_TOKEN}
     networks:
       - app_network
-
-  photoprism:
-    container_name: photoprism
-    ## Use photoprism/photoprism:preview for testing preview builds:
-    image: photoprism/photoprism:latest
-    ## Don't enable automatic restarts until PhotoPrism has been properly configured and tested!
-    ## If the service gets stuck in a restart loop, this points to a memory, filesystem, network, or database issue:
-    ## https://docs.photoprism.app/getting-started/troubleshooting/#fatal-server-errors
-    # restart: unless-stopped
-    stop_grace_period: 10s
-    depends_on:
-      - mariadb_pp
-    security_opt:
-      - seccomp:unconfined
-      - apparmor:unconfined
-    ## Server port mapping in the format "Host:Container". To use a different port, change the host port on
-    ## the left-hand side and keep the container port, e.g. "80:2342" (for HTTP) or "443:2342 (for HTTPS):
-    ports:
-      - "2342:2342"
-    ## Before you start the service, please check the following config options (and change them as needed):
-    ## https://docs.photoprism.app/getting-started/config-options/
-    environment:
-      PHOTOPRISM_ADMIN_USER: "admin" # admin login username
-      PHOTOPRISM_ADMIN_PASSWORD: "insecure" # initial admin password (8-72 characters)
-      PHOTOPRISM_AUTH_MODE: "password" # authentication mode (public, password)
-      PHOTOPRISM_SITE_URL: "http://localhost:2342/" # server URL in the format "http(s)://domain.name(:port)/(path)"
-      PHOTOPRISM_DISABLE_TLS: "false" # disables HTTPS/TLS even if the site URL starts with https:// and a certificate is available
-      PHOTOPRISM_DEFAULT_TLS: "true" # defaults to a self-signed HTTPS/TLS certificate if no other certificate is available
-      PHOTOPRISM_ORIGINALS_LIMIT: 5000 # file size limit for originals in MB (increase for high-res video)
-      PHOTOPRISM_HTTP_COMPRESSION: "gzip" # improves transfer speed and bandwidth utilization (none or gzip)
-      PHOTOPRISM_LOG_LEVEL: "info" # log level: trace, debug, info, warning, or error
-      PHOTOPRISM_READONLY: "false" # do not modify originals directory (reduced functionality)
-      PHOTOPRISM_EXPERIMENTAL: "false" # enables experimental features
-      PHOTOPRISM_DISABLE_CHOWN: "false" # disables updating storage permissions via chmod and chown on startup
-      PHOTOPRISM_DISABLE_WEBDAV: "false" # disables built-in WebDAV server
-      PHOTOPRISM_DISABLE_SETTINGS: "false" # disables settings UI and API
-      PHOTOPRISM_DISABLE_TENSORFLOW: "false" # disables all features depending on TensorFlow
-      PHOTOPRISM_DISABLE_FACES: "false" # disables face detection and recognition (requires TensorFlow)
-      PHOTOPRISM_DISABLE_CLASSIFICATION: "false" # disables image classification (requires TensorFlow)
-      PHOTOPRISM_DISABLE_VECTORS: "false" # disables vector graphics support
-      PHOTOPRISM_DISABLE_RAW: "false" # disables indexing and conversion of RAW images
-      PHOTOPRISM_RAW_PRESETS: "false" # enables applying user presets when converting RAW images (reduces performance)
-      PHOTOPRISM_SIDECAR_YAML: "true" # creates YAML sidecar files to back up picture metadata
-      PHOTOPRISM_BACKUP_ALBUMS: "true" # creates YAML files to back up album metadata
-      PHOTOPRISM_BACKUP_DATABASE: "true" # creates regular backups based on the configured schedule
-      PHOTOPRISM_BACKUP_SCHEDULE: "daily" # backup SCHEDULE in cron format (e.g. "0 12 * * *" for daily at noon) or at a random time (daily, weekly)
-      PHOTOPRISM_INDEX_SCHEDULE: "" # indexing SCHEDULE in cron format (e.g. "@every 3h" for every 3 hours; "" to disable)
-      PHOTOPRISM_AUTO_INDEX: 300 # delay before automatically indexing files in SECONDS when uploading via WebDAV (-1 to disable)
-      PHOTOPRISM_AUTO_IMPORT: -1 # delay before automatically importing files in SECONDS when uploading via WebDAV (-1 to disable)
-      PHOTOPRISM_DETECT_NSFW: "false" # automatically flags photos as private that MAY be offensive (requires TensorFlow)
-      PHOTOPRISM_UPLOAD_NSFW: "true" # allows uploads that MAY be offensive (no effect without TensorFlow)
-      PHOTOPRISM_UPLOAD_ALLOW: "" # restricts uploads to these file types (comma-separated list of EXTENSIONS; leave blank to allow all)
-      PHOTOPRISM_UPLOAD_ARCHIVES: "true" # allows upload of zip archives (will be extracted before import)
-      # PHOTOPRISM_DATABASE_DRIVER: "sqlite"         # SQLite is an embedded database that does not require a separate database server
-      PHOTOPRISM_DATABASE_DRIVER: "mysql" # MariaDB 10.5.12+ (MySQL successor) offers significantly better performance compared to SQLite
-      PHOTOPRISM_DATABASE_SERVER: "mariadb_pp:3306" # MariaDB database server (hostname:port)
-      PHOTOPRISM_DATABASE_NAME: "photoprism" # MariaDB database, see MARIADB_DATABASE in the mariadb service
-      PHOTOPRISM_DATABASE_USER: "photoprism" # MariaDB database username, must be the same as MARIADB_USER
-      PHOTOPRISM_DATABASE_PASSWORD: "insecure" # MariaDB database password, must be the same as MARIADB_PASSWORD
-      PHOTOPRISM_SITE_CAPTION: "AI-Powered Photos App"
-      PHOTOPRISM_SITE_DESCRIPTION: "" # meta site description
-      PHOTOPRISM_SITE_AUTHOR: "" # meta site author
-      ## Run/install on first startup, see https://github.com/photoprism/photoprism/blob/develop/scripts/dist/Makefile:
-      PHOTOPRISM_INIT: "https tensorflow" # common options: update tensorflow https intel gpu davfs
-      ## Video Transcoding (https://docs.photoprism.app/getting-started/advanced/transcoding/):
-      # PHOTOPRISM_FFMPEG_ENCODER: "software"        # H.264/AVC encoder (software, intel, nvidia, apple, raspberry, or vaapi)
-      # PHOTOPRISM_FFMPEG_SIZE: "1920"               # video size limit in pixels (720-7680) (default: 3840)
-      # PHOTOPRISM_FFMPEG_BITRATE: "32"              # video bitrate limit in Mbps (default: 60)
-      ## Run as a non-root user after initialization (supported: 0, 33, 50-99, 500-600, and 900-1200):
-      # PHOTOPRISM_UID: 1000
-      # PHOTOPRISM_GID: 1000
-      # PHOTOPRISM_UMASK: 0000
-    ## Start as non-root user before initialization (supported: 0, 33, 50-99, 500-600, and 900-1200):
-    # user: "1000:1000"
-    ## Share hardware devices with FFmpeg and TensorFlow (optional):
-    # devices:
-    #  - "/dev/dri:/dev/dri"                         # Intel QSV
-    #  - "/dev/nvidia0:/dev/nvidia0"                 # Nvidia CUDA
-    #  - "/dev/nvidiactl:/dev/nvidiactl"
-    #  - "/dev/nvidia-modeset:/dev/nvidia-modeset"
-    #  - "/dev/nvidia-nvswitchctl:/dev/nvidia-nvswitchctl"
-    #  - "/dev/nvidia-uvm:/dev/nvidia-uvm"
-    #  - "/dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools"
-    #  - "/dev/video11:/dev/video11"                 # Video4Linux Video Encode Device (h264_v4l2m2m)
-    working_dir: "/photoprism" # do not change or remove
-    ## Storage Folders: "~" is a shortcut for your home directory, "." for the current directory
-    volumes:
-      # "/host/folder:/photoprism/folder"                # Example
-      - "/media/debian.share/FINAL_restore/NEF:/photoprism/originals" # Original media files (DO NOT REMOVE)
-      # - "~/Import:/photoprism/import"                  # *Optional* base folder from which files can be imported to originals
-      - "./storage:/photoprism/storage" # *Writable* storage folder for cache, database, and sidecar files (DO NOT REMOVE)
-
-  ## MariaDB Database Server (recommended)
-  ## see https://docs.photoprism.app/getting-started/faq/#should-i-use-sqlite-mariadb-or-mysql
-  mariadb_pp:
-    container_name: mariadb_pp
-    image: mariadb:11
-    ## If MariaDB gets stuck in a restart loop, this points to a memory or filesystem issue:
-    ## https://docs.photoprism.app/getting-started/troubleshooting/#fatal-server-errors
-    restart: unless-stopped
-    stop_grace_period: 5s
-    security_opt: # see https://github.com/MariaDB/mariadb-docker/issues/434#issuecomment-1136151239
-      - seccomp:unconfined
-      - apparmor:unconfined
-    command: --innodb-buffer-pool-size=512M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
-    ## Never store database files on an unreliable device such as a USB flash drive, an SD card, or a shared network folder:
-    volumes:
-      - "./database:/var/lib/mysql" # DO NOT REMOVE
-    environment:
-      MARIADB_AUTO_UPGRADE: "1"
-      MARIADB_INITDB_SKIP_TZINFO: "1"
-      MARIADB_DATABASE: "photoprism"
-      MARIADB_USER: "photoprism"
-      MARIADB_PASSWORD: "insecure"
-      MARIADB_ROOT_PASSWORD: "insecure"
-
-  ## Watchtower upgrades services automatically (optional)
-  ## see https://docs.photoprism.app/getting-started/updates/#watchtower
-  ## activate via "COMPOSE_PROFILES=update docker compose up -d"
-  watchtower:
-    restart: unless-stopped
-    image: containrrr/watchtower
-    profiles: ["update"]
-    environment:
-      WATCHTOWER_CLEANUP: "true"
-      WATCHTOWER_POLL_INTERVAL: 7200 # checks for updates every two hours
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "~/.docker/config.json:/config.json" # optional, for authentication if you have a Docker Hub account
-
-secrets:
-  db_password:
-    external: true
 
 # Volumes for persistent data
 volumes:
