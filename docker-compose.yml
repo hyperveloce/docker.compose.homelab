@@ -105,7 +105,7 @@ services:
     ports:
       - "2283:2283"
     depends_on:
-      - immich_redis
+      - redis
       - immich_postgres
     restart: unless-stopped
     networks:
