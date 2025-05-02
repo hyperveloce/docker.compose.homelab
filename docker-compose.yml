@@ -92,16 +92,6 @@ services:
     networks:
       - app_network
 
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: unless-stopped
-    volumes:
-      - /srv/data/portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - app_network
-
   ### HOMEASSISTANT
   immich-server:
     container_name: immich_server
@@ -115,8 +105,8 @@ services:
     ports:
       - "2283:2283"
     depends_on:
-      - redis
-      - database
+      - immich_redis
+      - immich_postgres
     restart: unless-stopped
     networks:
       - app_network
@@ -274,6 +264,17 @@ services:
       - app_network
 
   ### SUPPORT TOOLS
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    volumes:
+      - /srv/data/portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app_network
+
   it_tools:
     container_name: it_tools
     image: corentinth/it-tools:latest
