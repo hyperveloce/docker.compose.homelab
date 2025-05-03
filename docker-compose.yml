@@ -44,7 +44,7 @@ services:
     env_file:
       - .env
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: 192.168.50.201:3000,localhost:3000
+      HOMEPAGE_ALLOWED_HOSTS: 192.168.50.201:3000,localhost:3000,homepage:3000
       PUID: 1000
       PGID: 1000
 
