@@ -33,7 +33,7 @@ services:
 
   ### DASHBOARD HOMARR
   homepage:
-    image: ghcr.io/gethomepage/homepage:dev
+    image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     restart: unless-stopped
     ports:
