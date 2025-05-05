@@ -31,6 +31,18 @@ services:
     networks:
       - app_network
 
+  docker-socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: docker-socket-proxy
+    environment:
+      CONTAINERS: 1
+      IMAGES: 1
+      INFO: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app_network
+
   ### DASHBOARD HOMARR
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
