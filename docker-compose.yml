@@ -303,14 +303,13 @@ services:
   ### SUPPORT TOOLS
   uptime-kuma:
     container_name: uptime-kuma
-    image: louislam/uptime-kuma:nightly2
+    image: louislam/uptime-kuma:1.23.16-debian
     volumes:
       #- ./data:/app/data
-      - /srv/data/uptime_server:/app/server
-      - /srv/volume/uptime_db:/app/db
+      - /srv/data/uptime_server:/app/data
     ports:
       - "3001:3001" # <Host Port>:<Container Port>
-      - "3307:3306"
+    restart: always
 
   portainer:
     image: portainer/portainer-ce:latest
