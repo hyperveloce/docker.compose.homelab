@@ -303,7 +303,7 @@ services:
   ### SUPPORT TOOLS
   uptime-kuma:
     container_name: uptime-kuma
-    image: louislam/uptime-kuma:latest
+    image: louislam/uptime-kuma:nightly2
     volumes:
       #- ./data:/app/data
       - /srv/data/uptime_server:/app/server
