@@ -302,8 +302,8 @@ services:
 
   ### SUPPORT TOOLS
   uptime-kuma:
-    container_name: uptime-kuma-dev
-    image: louislam/uptime-kuma:nightly2
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma:latest
     volumes:
       #- ./data:/app/data
       - /srv/data/uptime_server:/app/server
