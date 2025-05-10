@@ -344,7 +344,7 @@ services:
     volumes:
       - /srv/data/speedtest_data:/config
     ports:
-      - 80:80
+      - 88:80
     restart: unless-stopped
 
   it_tools:
