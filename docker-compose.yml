@@ -306,8 +306,8 @@ services:
     image: louislam/uptime-kuma:nightly2
     volumes:
       #- ./data:/app/data
-      - ../server:/app/server
-      - ../db:/app/db
+      - /srv/data/uptime_server:/app/server
+      - /srv/volume/uptime_db:/app/db
     ports:
       - "3001:3001" # <Host Port>:<Container Port>
       - "3307:3306"
@@ -342,7 +342,7 @@ services:
       - DISPLAY_TIMEZONE=Etc/UTC #optional
       - PRUNE_RESULTS_OLDER_THAN=0 #optional
     volumes:
-      - /path/to/speedtest-tracker/data:/config
+      - /srv/data/speedtest_data:/config
     ports:
       - 80:80
     restart: unless-stopped
