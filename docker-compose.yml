@@ -298,6 +298,8 @@ services:
     ports:
       - "3001:3001" # <Host Port>:<Container Port>
     restart: always
+    networks:
+      - app_network
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -309,37 +311,49 @@ services:
     networks:
       - app_network
 
-  speedtest-tracker:
-    image: lscr.io/linuxserver/speedtest-tracker:latest
-    restart: unless-stopped
-    container_name: speedtest-tracker
-    ports:
-      - 8085:80
-      - 8445:443
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - APP_KEY=FZ4kKk3YFJ1oCJJ6SjwO6tAxZEKgcENzWlxJ24ITGvc
-      - DB_CONNECTION=sqlite
-    volumes:
-      - /srv/data/speedtest_data:/config
-      - /path/to-custom-ssl-keys:/config/keys
-    restart: unless-stopped
-
-  pairdrop:
-      image: lscr.io/linuxserver/pairdrop:latest
-      container_name: pairdrop
+    speedtest-tracker:
+      image: lscr.io/linuxserver/speedtest-tracker:latest
+      container_name: speedtest-tracker
       environment:
         - PUID=1000
         - PGID=1000
         - TZ=Etc/UTC
-        - RATE_LIMIT=false #optional
-        - WS_FALLBACK=false #optional
-        - RTC_CONFIG= #optional
-        - DEBUG_MODE=false #optional
+        - APP_KEY=FZ4kKk3YFJ1oCJJ6SjwO6tAxZEKgcENzWlxJ24ITGvc
+        - APP_URL=
+        - DB_CONNECTION=sqlite
+        - SPEEDTEST_SCHEDULE=
+        - SPEEDTEST_SERVERS=
+        - DB_HOST= #optional
+        - DB_PORT= #optional
+        - DB_DATABASE= #optional
+        - DB_USERNAME= #optional
+        - DB_PASSWORD= #optional
+        - DISPLAY_TIMEZONE=Etc/UTC #optional
+        - PRUNE_RESULTS_OLDER_THAN=0 #optional
+      volumes:
+        - /path/to/speedtest-tracker/data:/config
       ports:
-        - 3005:3000
+        - 80:80
       restart: unless-stopped
+      networks:
+        - app_network
+
+  pairdrop:
+    image: lscr.io/linuxserver/pairdrop:latest
+    container_name: pairdrop
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - RATE_LIMIT=false #optional
+      - WS_FALLBACK=false #optional
+      - RTC_CONFIG= #optional
+      - DEBUG_MODE=false #optional
+    ports:
+      - 3005:3000
+    restart: unless-stopped
+    networks:
+      - app_network
 
   it_tools:
     container_name: it_tools
