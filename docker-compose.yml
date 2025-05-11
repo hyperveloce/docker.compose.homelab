@@ -331,7 +331,7 @@ services:
       - DISPLAY_TIMEZONE=Etc/UTC #optional
       - PRUNE_RESULTS_OLDER_THAN=0 #optional
     volumes:
-      - /path/to/speedtest-tracker/data:/config
+      - /srv/data/speedtest_data:/config
     ports:
       - 85:80
     restart: unless-stopped
