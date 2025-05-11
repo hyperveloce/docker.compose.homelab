@@ -314,8 +314,8 @@ services:
     restart: unless-stopped
     container_name: speedtest-tracker
     ports:
-      - 8080:80
-      - 8443:443
+      - 8085:80
+      - 8445:443
     environment:
       - PUID=1000
       - PGID=1000
