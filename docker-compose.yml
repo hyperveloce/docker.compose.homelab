@@ -316,7 +316,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - APP_KEY=
+      - APP_KEY=FZ4kKk3YFJ1oCJJ6SjwO6tAxZEKgcENzWlxJ24ITGvc=
       - APP_URL=
       - DB_CONNECTION=sqlite
       - SPEEDTEST_SCHEDULE=
