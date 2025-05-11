@@ -333,7 +333,7 @@ services:
     volumes:
       - /path/to/speedtest-tracker/data:/config
     ports:
-      - 80:80
+      - 85:80
     restart: unless-stopped
     networks:
       - app_network
