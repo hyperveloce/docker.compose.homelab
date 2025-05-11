@@ -18,19 +18,6 @@ services:
     networks:
       - app_network
 
-  ### DASHBOARD HOMARR
-  homarr:
-    image: ghcr.io/homarr-labs/homarr:latest
-    container_name: homarr
-    restart: unless-stopped
-    volumes:
-      - /srv/data/homarr_appdata:/appdata
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - SECRET_ENCRYPTION_KEY=2bfd284f39d01c07913fd2b8a8fe43bbc9aaad3ae6c2983aa38c7ca49e2bd4c7 #need to create new
-    networks:
-      - app_network
-
   docker-socket-proxy:
     image: tecnativa/docker-socket-proxy
     container_name: docker-socket-proxy
@@ -307,6 +294,7 @@ services:
     volumes:
       #- ./data:/app/data
       - /srv/data/uptime_server:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "3001:3001" # <Host Port>:<Container Port>
     restart: always
