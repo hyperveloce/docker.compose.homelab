@@ -25,6 +25,8 @@ services:
       CONTAINERS: 1
       IMAGES: 1
       INFO: 1
+      STATS: 1
+      EVENTS: 1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -257,7 +259,7 @@ services:
     network_mode: host
     environment:
       - LISTEN=45876
-      - KEY="your-public-key" # Replace with key from Beszel hub UI
+      - KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGDKzBXCwJ3T1w7MS1dE35M5JnIwe/kHvizoHGtvzSzw" # Replace with key from Beszel hub UI
       - DOCKER_HOST=tcp://192.168.50.201:2375 # Use host IP for docker-socket-proxy
     depends_on:
       - docker-socket-proxy
