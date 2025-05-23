@@ -259,9 +259,11 @@ services:
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
+    env_file:
+      - .env
     environment:
       - LISTEN=45876
-      - KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGDKzBXCwJ3T1w7MS1dE35M5JnIwe/kHvizoHGtvzSzw" # Replace with key from Beszel hub UI
+      - KEY="${SSH_KEY}" # Replace with key from Beszel hub UI
       - DOCKER_HOST=tcp://192.168.50.201:2375 # Use host IP for docker-socket-proxy
     depends_on:
       - docker-socket-proxy
