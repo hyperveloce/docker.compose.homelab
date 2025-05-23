@@ -263,11 +263,13 @@ services:
       - docker-socket-proxy
 
   dozzle:
-    image: lscr.io/linuxserver/dozzle:latest
+    image: amir20/dozzle:latest
     container_name: dozzle
     restart: unless-stopped
     ports:
       - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DOCKER_HOST=tcp://192.168.50.201:2375 # Use host IP for docker-socket-proxy
     networks:
