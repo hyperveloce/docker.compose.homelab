@@ -254,19 +254,31 @@ services:
     depends_on:
       - docker-socket-proxy
 
+  # beszel-agent:
+  #   image: henrygd/beszel-agent:latest
+  #   container_name: beszel-agent
+  #   restart: unless-stopped
+  #   network_mode: host
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - LISTEN=45876
+  #     - KEY="${SSH_KEY}" # Replace with key from Beszel hub UI
+  #     - DOCKER_HOST=tcp://192.168.50.201:2375 # Use host IP for docker-socket-proxy
+  #   depends_on:
+  #     - docker-socket-proxy
   beszel-agent:
-    image: henrygd/beszel-agent:latest
-    container_name: beszel-agent
+    image: "henrygd/beszel-agent"
+    container_name: "beszel-agent"
     restart: unless-stopped
     network_mode: host
-    env_file:
-      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # monitor other disks / partitions by mounting a folder in /extra-filesystems
+      # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
     environment:
-      - LISTEN=45876
-      - KEY="${SSH_KEY}" # Replace with key from Beszel hub UI
-      - DOCKER_HOST=tcp://192.168.50.201:2375 # Use host IP for docker-socket-proxy
-    depends_on:
-      - docker-socket-proxy
+      LISTEN: 45876
+      KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGDKzBXCwJ3T1w7MS1dE35M5JnIwe/kHvizoHGtvzSzw"
 
   dozzle:
     image: amir20/dozzle:latest
