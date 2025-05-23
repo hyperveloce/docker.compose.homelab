@@ -254,13 +254,11 @@ services:
     image: henrygd/beszel-agent:latest
     container_name: beszel-agent
     restart: unless-stopped
-    network_mode: host # Required for system metrics; adjust if conflicts arise
+    network_mode: host
     environment:
       - LISTEN=45876
-      - KEY="your-public-key" # Replace with key from Beszel hub UI’s "Add System"
-      - DOCKER_HOST=tcp://docker-socket-proxy:2375 # Use docker-socket-proxy
-    networks:
-      - app_network
+      - KEY="your-public-key" # Replace with key from Beszel hub UI
+      - DOCKER_HOST=tcp://192.168.50.201:2375 # Use host IP for docker-socket-proxy
     depends_on:
       - docker-socket-proxy
 
@@ -271,7 +269,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DOCKER_HOST=tcp://docker-socket-proxy:2375 # Use docker-socket-proxy
+      - DOCKER_HOST=tcp://192.168.50.201:2375 # Use host IP for docker-socket-proxy
     networks:
       - app_network
     depends_on:
