@@ -13,8 +13,8 @@ BACKUP_PATHS=(
 
 # Backup repositories (you can add multiple repositories here)
 BACKUP_REPOSITORIES=(
-    "/home/kanasu/kserver/restic.backups"
-    # "/mnt/network_nas/restic-backups"
+    # "/home/kanasu/kserver/restic.backups"
+    "/mnt/asus/kserver_backup/restic-backups"
     # "/mnt/offsite_nas/restic-backups"
 )
 

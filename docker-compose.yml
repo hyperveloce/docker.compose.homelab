@@ -21,6 +21,7 @@ services:
   docker-socket-proxy:
     image: tecnativa/docker-socket-proxy
     container_name: docker-socket-proxy
+    restart: unless-stopped
     environment:
       CONTAINERS: 1
       IMAGES: 1
@@ -59,6 +60,7 @@ services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
+    restart: unless-stopped
     volumes:
       - /srv/data/open-webui_data:/app/backend/data
     environment:
@@ -254,19 +256,6 @@ services:
     depends_on:
       - docker-socket-proxy
 
-  # beszel-agent:
-  #   image: henrygd/beszel-agent:latest
-  #   container_name: beszel-agent
-  #   restart: unless-stopped
-  #   network_mode: host
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - LISTEN=45876
-  #     - KEY="${SSH_KEY}" # Replace with key from Beszel hub UI
-  #     - DOCKER_HOST=tcp://192.168.50.201:2375 # Use host IP for docker-socket-proxy
-  #   depends_on:
-  #     - docker-socket-proxy
   beszel-agent:
     image: "henrygd/beszel-agent"
     container_name: "beszel-agent"
@@ -296,28 +285,22 @@ services:
       - docker-socket-proxy
 
   speedtest-tracker:
-    image: lscr.io/linuxserver/speedtest-tracker:latest
-    container_name: speedtest-tracker
+    image: henrywhitaker3/speedtest-tracker
+    container_name: speedtest
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
-      - APP_KEY=FZ4kKk3YFJ1oCJJ6SjwO6tAxZEKgcENzWlxJ24ITGvc
-      - APP_URL=
-      - DB_CONNECTION=sqlite
-      - SPEEDTEST_SCHEDULE=
-      - SPEEDTEST_SERVERS=
-      - DB_HOST= #optional
-      - DB_PORT= #optional
-      - DB_DATABASE= #optional
-      - DB_USERNAME= #optional
-      - DB_PASSWORD= #optional
-      - DISPLAY_TIMEZONE=Etc/UTC #optional
-      - PRUNE_RESULTS_OLDER_THAN=0 #optional
+      - TZ=Australia/Melbourne
+      - OOKLA_EULA_GDPR=true
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "10"
+            max-size: "200k"
     volumes:
       - /srv/data/speedtest_data:/config
     ports:
-      - 85:80
+      - 8765:80
     restart: unless-stopped
     networks:
       - app_network
