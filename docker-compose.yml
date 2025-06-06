@@ -245,7 +245,7 @@ services:
 
   ### MONITORING
   beszel:
-    image: ghcr.io/gethomepage/beszel:latest
+    image: henrygd/beszel
     container_name: beszel
     restart: unless-stopped
     ports:
