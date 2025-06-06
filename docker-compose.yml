@@ -48,7 +48,6 @@ services:
       - /home/kanasu:/home/kanasu:ro
       - /srv/data:/srv/data:ro
       - /mnt/asus/kserver_backup:/mnt/asus/kserver_backup:ro
-
     env_file:
       - .env
     environment:
@@ -246,7 +245,7 @@ services:
 
   ### MONITORING
   beszel:
-    image: henrygd/beszel:latest
+    image: ghcr.io/gethomepage/beszel:latest
     container_name: beszel
     restart: unless-stopped
     ports:
