@@ -45,8 +45,10 @@ services:
     volumes:
       - /srv/data/homepage_config:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
+      - /home/kanasu:/home/kanasu:ro
       - /srv/data:/srv/data:ro
-      - /srv/volume:/srv/volume:ro
+      - /mnt/asus/kserver_backup:/mnt/asus/kserver_backup:ro
+
     env_file:
       - .env
     environment:
