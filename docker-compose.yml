@@ -45,6 +45,8 @@ services:
     volumes:
       - /srv/data/homepage_config:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
+      - /srv/data:/srv/data:ro
+      - /srv/volume:/srv/volume:ro
     env_file:
       - .env
     environment:
