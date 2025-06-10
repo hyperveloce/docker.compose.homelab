@@ -89,7 +89,7 @@ services:
       REDIS_HOST_PASSWORD: ${NC_REDIS_PASSWORD} # You can change this password
       REDIS_PORT: 6379
     ports:
-      - 8085:80
+      - 8080:80
     volumes:
       - /srv/data/nextcloud_data:/var/www/html/data # Bind mount for user data
       - /srv/data/nextcloud_config:/var/www/html/config # Docker volume for config
@@ -101,9 +101,8 @@ services:
       - app_network
 
   nc_db:
-    image: mariadb:latest
+    image: mariadb:10.6
     container_name: nc_db
-    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # Change this to a strong password
       MYSQL_DATABASE: nextcloud
@@ -111,6 +110,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Change this to a strong password
     volumes:
       - /srv/volume/nextclouddb_data:/var/lib/mysql
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    restart: unless-stopped
     networks:
       - app_network
 
