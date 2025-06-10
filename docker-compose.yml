@@ -76,52 +76,52 @@ services:
       - app_network
 
   ### NEXTCLOUD
-  # nextcloud:
-  #   image: nextcloud:latest
-  #   container_name: nextcloud
-  #   restart: unless-stopped
-  #   environment:
-  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Same as the DB password
-  #     MYSQL_DATABASE: nextcloud
-  #     MYSQL_USER: nextcloud
-  #     MYSQL_HOST: nc_db
-  #     REDIS_HOST: nc_redis
-  #     REDIS_HOST_PASSWORD: ${NC_REDIS_PASSWORD} # You can change this password
-  #     REDIS_PORT: 6379
-  #   ports:
-  #     - 8085:80
-  #   volumes:
-  #     - /srv/data/nextcloud_data:/var/www/html/data # Bind mount for user data
-  #     - /srv/data/nextcloud_config:/var/www/html/config # Docker volume for config
-  #     - /srv/data/nextcloud_themes:/var/www/html/themes # Custom the
-  #   depends_on:
-  #     - nc_db
-  #     - nc_redis
-  #   networks:
-  #     - app_network
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    restart: unless-stopped
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Same as the DB password
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_HOST: nc_db
+      REDIS_HOST: nc_redis
+      REDIS_HOST_PASSWORD: ${NC_REDIS_PASSWORD} # You can change this password
+      REDIS_PORT: 6379
+    ports:
+      - 8085:80
+    volumes:
+      - /srv/data/nextcloud_data:/var/www/html/data # Bind mount for user data
+      - /srv/data/nextcloud_config:/var/www/html/config # Docker volume for config
+      - /srv/data/nextcloud_themes:/var/www/html/themes # Custom the
+    depends_on:
+      - nc_db
+      - nc_redis
+    networks:
+      - app_network
 
-  # nc_db:
-  #   image: mariadb:latest
-  #   container_name: nc_db
-  #   restart: unless-stopped
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # Change this to a strong password
-  #     MYSQL_DATABASE: nextcloud
-  #     MYSQL_USER: nextcloud
-  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Change this to a strong password
-  #   volumes:
-  #     - /srv/volume/nextclouddb_data:/var/lib/mysql
-  #   networks:
-  #     - app_network
+  nc_db:
+    image: mariadb:latest
+    container_name: nc_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # Change this to a strong password
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Change this to a strong password
+    volumes:
+      - /srv/volume/nextclouddb_data:/var/lib/mysql
+    networks:
+      - app_network
 
-  # # Redis Service for Nextcloud Caching
-  # nc_redis:
-  #   image: redis:alpine
-  #   container_name: nc_redis
-  #   restart: unless-stopped
-  #   command: ["redis-server", "--requirepass", "redispassword"] # Set a password for Redis
-  #   networks:
-  #     - app_network
+  # Redis Service for Nextcloud Caching
+  nc_redis:
+    image: redis:alpine
+    container_name: nc_redis
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "redispassword"] # Set a password for Redis
+    networks:
+      - app_network
 
   ### HOMEASSISTANT
   immich-server:
