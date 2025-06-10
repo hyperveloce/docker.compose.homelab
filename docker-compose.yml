@@ -88,8 +88,6 @@ services:
       REDIS_HOST: nc_redis
       REDIS_HOST_PASSWORD: ${NC_REDIS_PASSWORD} # You can change this password
       REDIS_PORT: 6379
-    ports:
-      - 8080:80
     volumes:
       - /srv/data/nextcloud_data:/var/www/html/data # Bind mount for user data
       - /srv/data/nextcloud_config:/var/www/html/config # Docker volume for config
