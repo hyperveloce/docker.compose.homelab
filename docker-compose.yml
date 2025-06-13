@@ -81,6 +81,8 @@ services:
     container_name: nextcloud
     restart: unless-stopped
     environment:
+      NEXTCLOUD_ADMIN_USER: kanasu
+      NEXTCLOUD_ADMIN_PASSWORD: ${NC_ADMIN_PASSWORD}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD} # Same as the DB password
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
