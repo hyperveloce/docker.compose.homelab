@@ -2,7 +2,7 @@
 
 # Config
 RESTIC_REPO="/mnt/asus/kserver_backup/restic-backups"
-RESTORE_DIR="$HOME/restic-restore-test"
+RESTORE_DIR="/srv/restic-restore-test"
 SNAPSHOT_ID="b7e37243"
 LOG_FILE="/srv/restic-restore.log"
 ENV_FILE="$HOME/git.hyperveloce/docker.compose.homelab/.env"

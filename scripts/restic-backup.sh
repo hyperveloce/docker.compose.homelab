@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setup backup directory
-# restic init --repo /mnt/asus/kserver_backup/restic-backups
+# RESTIC_PASSWORD_FILE=/home/kanasu/git.hyperveloce/docker.compose.homelab/.env restic init --repo /mnt/asus/kserver_backup/restic-backups
 
 # Load environment variables from the .env file
 set -a
@@ -9,7 +9,7 @@ source /home/kanasu/git.hyperveloce/docker.compose.homelab/.env
 set +a
 
 # Log file
-LOG_FILE="/srv/restic-backup.log"
+LOG_FILE="/srv/log/restic-backup.log"
 
 # Check if RESTIC_PASSWORD is available
 if [ -z "$RESTIC_PASSWORD" ]; then
