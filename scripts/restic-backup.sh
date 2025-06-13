@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Setup backup directory
+# restic init --repo /mnt/asus/kserver_backup/restic-backups
 # Load environment variables from the .env file
 set -a
 source /home/kanasu/git.hyperveloce/docker.compose.homelab/.env
