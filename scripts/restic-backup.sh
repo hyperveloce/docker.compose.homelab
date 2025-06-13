@@ -31,14 +31,19 @@ BACKUP_REPOSITORIES=(
 
 DAY_OF_WEEK=$(date +%u)
 
-# === MySQL dump ===
+# === MySQL Docker Dump ===
 DB_DUMP_DIR="/srv/db_backup"
 mkdir -p "$DB_DUMP_DIR"
 
+# Clean up any previous dump
 rm -f "$DB_DUMP_DIR/nextcloud.sql"
 
-echo "Dumping database to $DB_DUMP_DIR/nextcloud.sql..." | tee -a "$LOG_FILE"
-mysqldump -h localhost -u root -p"${MYSQL_PASSWORD}" nextcloud > "$DB_DUMP_DIR/nextcloud.sql"
+# Docker-based mysqldump
+echo "Dumping Nextcloud database using Docker..." | tee -a "$LOG_FILE"
+docker run --rm --network app_network \
+    -e MYSQL_PWD="${MYSQL_PASSWORD}" \
+    mysql:8.0 \
+    mysqldump -h nc_db -u nextcloud nextcloud > "$DB_DUMP_DIR/nextcloud.sql"
 
 if [ $? -ne 0 ]; then
     echo "❌ Database dump failed. Exiting." | tee -a "$LOG_FILE"
