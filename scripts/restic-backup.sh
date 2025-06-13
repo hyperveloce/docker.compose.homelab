@@ -1,61 +1,83 @@
 #!/bin/bash
-#chmod +x restic-backup.sh
 
-# Config
-RESTIC_PASSWORD_FILE=/home/kanasu/kserver/restic-pw.txt
+# Load environment variables from the .env file
+set -a
+source /home/kanasu/git.hyperveloce/docker.compose.homelab/.env
+set +a
+
+# === Ensure mount exists ===
+BACKUP_MOUNT="/mnt/asus/kserver_backup"
+echo "Checking if $BACKUP_MOUNT is mounted..."
+sudo mount -a
+
+if ! mountpoint -q "$BACKUP_MOUNT"; then
+    echo "Mount failed or not present. Exiting."
+    exit 1
+fi
+
+# === Config ===
 LOG_FILE="/home/kanasu/kserver/restic-backup.log"
 
-# Paths to back up
+# Directories to back up
 BACKUP_PATHS=(
     "/srv/data"
-    "/srv/volume"
+    "/srv/db_backup"
 )
 
-# Backup repositories (you can add multiple repositories here)
+# Repositories to back up to
 BACKUP_REPOSITORIES=(
-    # "/home/kanasu/kserver/restic.backups"
     "/mnt/asus/kserver_backup/restic-backups"
-    # "/mnt/offsite_nas/restic-backups"
 )
 
-# Get current day (1=Monday, 7=Sunday)
 DAY_OF_WEEK=$(date +%u)
 
-# Start backup
+# === MySQL dump ===
+DB_DUMP_DIR="/srv/db_backup"
+mkdir -p "$DB_DUMP_DIR"
+
+rm -f "$DB_DUMP_DIR/nextcloud.sql"
+
+echo "Dumping database to $DB_DUMP_DIR/nextcloud.sql..." | tee -a "$LOG_FILE"
+mysqldump -h localhost -u root -p"${MYSQL_PASSWORD}" nextcloud > "$DB_DUMP_DIR/nextcloud.sql"
+
+if [ $? -ne 0 ]; then
+    echo "❌ Database dump failed. Exiting." | tee -a "$LOG_FILE"
+    exit 1
+fi
+
+# === Restic backup ===
 echo "Starting backup: $(date)" | tee -a "$LOG_FILE"
 
-# Loop through repositories and perform backups
 for REPO in "${BACKUP_REPOSITORIES[@]}"; do
     echo "Backing up to repository: $REPO" | tee -a "$LOG_FILE"
     restic backup "${BACKUP_PATHS[@]}" \
         --repo "$REPO" \
-        --password-file "$RESTIC_PASSWORD_FILE"
+        2>&1 | tee -a "$LOG_FILE"
 done
 
-# Retention policy for local backup repositories
+# === Retention policy ===
 if [ "$DAY_OF_WEEK" -eq 7 ]; then
     echo "Applying local retention policy..." | tee -a "$LOG_FILE"
     for REPO in "${BACKUP_REPOSITORIES[@]}"; do
         if [ "$REPO" != "/mnt/offsite_nas/restic-backups" ]; then
-            # Apply retention for local and network backups
             echo "Pruning local or network backup: $REPO" | tee -a "$LOG_FILE"
             restic forget \
                 --repo "$REPO" \
                 --keep-daily 7 \
                 --keep-weekly 2 \
                 --keep-quarterly 2 \
-                --prune
+                --prune \
+                2>&1 | tee -a "$LOG_FILE"
         fi
     done
 
-    # Retention policy for offsite NAS repository
     echo "Applying offsite retention policy..." | tee -a "$LOG_FILE"
     restic forget \
         --repo "/mnt/offsite_nas/restic-backups" \
         --keep-weekly 2 \
         --keep-quarterly 2 \
-        --prune
+        --prune \
+        2>&1 | tee -a "$LOG_FILE"
 fi
 
-# Finish
 echo "Backup completed: $(date)" | tee -a "$LOG_FILE"
