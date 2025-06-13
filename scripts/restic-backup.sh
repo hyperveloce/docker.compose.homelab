@@ -7,6 +7,12 @@ set +a
 
 # Check if the mount exists
 BACKUP_MOUNT="/mnt/asus/kserver_backup"
+
+BACKUP_PATHS=(
+    "/srv/data"
+    "/srv/db_backup"
+)
+
 echo "Checking if $BACKUP_MOUNT is mounted..."
 
 if ! mountpoint -q "$BACKUP_MOUNT"; then
@@ -29,7 +35,7 @@ DAY_OF_WEEK=$(date +%u)
 echo "Starting backup: $(date)" | tee -a "$LOG_FILE"
 
 # Manual restic backup
-restic backup /srv/data \
+restic backup ${BACKUP_PATHS[@]} \
   --repo /mnt/asus/kserver_backup/restic-backups \
   >> "$LOG_FILE" 2>&1
 
