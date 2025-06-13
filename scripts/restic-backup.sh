@@ -17,7 +17,7 @@ fi
 # Dump Nextcloud database using Docker
 echo "Dumping Nextcloud database using Docker..."
 docker run --rm --network app_network \
-  -e MYSQL_PWD="$MYSQL_PASSWORD" \
+  -e MYSQL_PWD=$MYSQL_PASSWORD \
   mysql:8.0 \
   mysqldump -h nc_db -u nextcloud > /srv/db_backup/nextcloud.sql
 
