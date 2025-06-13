@@ -14,11 +14,11 @@ set +a
 
 # Check if password is set
 if [ -z "$RESTIC_PASSWORD" ]; then
-    echo "❌ RESTIC_PASSWORD not loaded. Check $ENV_FILE"
+    echo "❌ RESTIC_PASSWORD not loaded. Check $ENV_FILE" | tee -a "$LOG_FILE"
     exit 1
 fi
 
-echo "🔄 Starting restore of snapshot $SNAPSHOT_ID to $RESTORE_DIR" | tee -a "$LOG_FILE"
+echo "🔄 Starting restore of snapshot $SNAPSHOT_ID to $RESTORE_DIR: $(date)" | tee -a "$LOG_FILE"
 
 # Create restore directory if it doesn't exist
 mkdir -p "$RESTORE_DIR"
@@ -27,6 +27,12 @@ mkdir -p "$RESTORE_DIR"
 restic restore "$SNAPSHOT_ID" \
     --target "$RESTORE_DIR" \
     --repo "$RESTIC_REPO" \
-    | tee -a "$LOG_FILE"
+    2>&1 | tee -a "$LOG_FILE"
 
-echo "✅ Restore completed: $(date)" | tee -a "$LOG_FILE"
+# Check exit status
+if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+    echo "❌ Restore failed: $(date)" | tee -a "$LOG_FILE"
+    exit 1
+fi
+
+echo "✅ Restore completed successfully: $(date)" | tee -a "$LOG_FILE"
