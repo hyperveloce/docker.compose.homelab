@@ -9,7 +9,7 @@ source /home/kanasu/git.hyperveloce/docker.compose.homelab/.env
 set +a
 
 # Log file
-LOG_FILE="/home/kanasu/kserver/restic-backup.log"
+LOG_FILE="/srv/restic-backup.log"
 
 # Check if RESTIC_PASSWORD is available
 if [ -z "$RESTIC_PASSWORD" ]; then
