@@ -19,7 +19,7 @@ echo "Dumping Nextcloud database using Docker..."
 docker run --rm --network app_network \
   -e MYSQL_PWD=$MYSQL_PASSWORD \
   mysql:8.0 \
-  mysqldump -h nc_db -u nextcloud > /srv/db_backup/nextcloud.sql
+  mysqldump -h nc_db -u nextcloud nextcloud > /srv/db_backup/nextcloud.sql
 
 # Log file
 LOG_FILE="/home/kanasu/kserver/restic-backup.log"
