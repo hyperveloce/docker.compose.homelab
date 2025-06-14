@@ -123,8 +123,8 @@ services:
     command: ["redis-server", "--requirepass", "redispassword"] # Set a password for Redis
     networks:
       - app_network
-    volumes:
-      - redis_cache:/data
+    tmpfs:
+      - /data
 
   ### HOMEASSISTANT
   immich-server:
