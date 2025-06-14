@@ -51,7 +51,7 @@ services:
     env_file:
       - .env
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: 192.168.50.201:3000,localhost:3000,homepage:3000
+      HOMEPAGE_ALLOWED_HOSTS: home.dnaone.love,192.168.50.201:3000,localhost:3000,homepage:3000
       HOMEPAGE_VAR_NPM_USER: ${NPM_USER}
       HOMEPAGE_VAR_NPM_PASS: ${NPM_PASS}
       PUID: ${PUID}
