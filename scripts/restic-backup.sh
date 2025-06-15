@@ -69,7 +69,7 @@ if [ "$DAY_OF_WEEK" -eq 7 ]; then
       --repo "$REPO_PATH" \
       --keep-daily 7 \
       --keep-weekly 2 \
-      --keep-quarterly 2 \
+      --keep-monthly 2 \
       --prune >> "$LOG_FILE" 2>&1
 
     if [ "${PIPESTATUS[0]}" -ne 0 ]; then
