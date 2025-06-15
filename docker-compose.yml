@@ -138,8 +138,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
     env_file:
       - .env
-    ports:
-      - "2283:2283"
+    # ports:
+    #   - "2283:2283"
     depends_on:
       - redis
       - postgres
@@ -255,8 +255,8 @@ services:
     image: henrygd/beszel
     container_name: beszel
     restart: unless-stopped
-    ports:
-      - "8090:8090"
+    # ports:
+    #   - "8090:8090"
     volumes:
       - /srv/data/beszel_data:/beszel_data
     extra_hosts:
@@ -283,8 +283,8 @@ services:
     image: amir20/dozzle:latest
     container_name: dozzle
     restart: unless-stopped
-    ports:
-      - "8070:8080"
+    # ports:
+    #   - "8070:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
@@ -309,8 +309,8 @@ services:
             max-size: "200k"
     volumes:
       - /srv/data/speedtest_data:/config
-    ports:
-      - 8765:80
+    # ports:
+    #   - 8765:80
     restart: unless-stopped
     networks:
       - app_network
@@ -326,8 +326,8 @@ services:
       - WS_FALLBACK=false #optional
       - RTC_CONFIG= #optional
       - DEBUG_MODE=false #optional
-    ports:
-      - 3005:3000
+    # ports:
+    #   - 3005:3000
     restart: unless-stopped
     networks:
       - app_network

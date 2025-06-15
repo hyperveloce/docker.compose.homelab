@@ -2,7 +2,7 @@
 # chmod +x update-docker.sh
 
 # Set the path to your Docker Compose files
-DOCKER_COMPOSE_DIR="/home/kanasu/git.hyperveloce/dockers"
+DOCKER_COMPOSE_DIR="/home/kanasu/git.hyperveloce/docker.compose.homelab"
 LOG_FILE="/var/log/docker_update.log"
 
 # Timestamp function
