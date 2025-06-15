@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# sudo ./scripts/restic-restore.sh
+
 # === CONFIGURATION ===
 RESTIC_REPO="/mnt/asus/kserver_backup/restic-backups"
 RESTORE_TARGET="/srv/restic-restore"
