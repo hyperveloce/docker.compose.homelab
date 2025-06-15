@@ -2,7 +2,7 @@
 
 # === CONFIGURATION ===
 RESTIC_REPO="/mnt/asus/kserver_backup/restic-backups"
-RESTORE_TARGET="/home/kanasu/restic-restore"
+RESTORE_TARGET="/srv/restic-restore"
 PASSWORD_FILE="/home/kanasu/restic-pw.txt"
 LOG_FILE="/home/kanasu/restic-restore.log"
 
