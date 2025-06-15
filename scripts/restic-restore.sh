@@ -1,38 +1,53 @@
 #!/bin/bash
 
-# Config
+# === CONFIGURATION ===
 RESTIC_REPO="/mnt/asus/kserver_backup/restic-backups"
-RESTORE_DIR="/srv/restic-restore-test"
-SNAPSHOT_ID="b7e37243"
-LOG_FILE="/srv/restic-restore.log"
-ENV_FILE="$HOME/git.hyperveloce/docker.compose.homelab/.env"
+RESTORE_TARGET="/home/kanasu/restic-restore"
+PASSWORD_FILE="/home/kanasu/restic-pw.txt"
+LOG_FILE="/home/kanasu/restic-restore.log"
 
-# Load environment variables (expects RESTIC_PASSWORD)
-set -a
-source "$ENV_FILE"
-set +a
-
-# Check if password is set
-if [ -z "$RESTIC_PASSWORD" ]; then
-    echo "❌ RESTIC_PASSWORD not loaded. Check $ENV_FILE" | tee -a "$LOG_FILE"
+# === CHECKS ===
+if [ ! -f "$PASSWORD_FILE" ]; then
+    echo "❌ Password file not found: $PASSWORD_FILE"
     exit 1
 fi
 
-echo "🔄 Starting restore of snapshot $SNAPSHOT_ID to $RESTORE_DIR: $(date)" | tee -a "$LOG_FILE"
+if [ ! -d "$RESTIC_REPO" ]; then
+    echo "❌ Restic repo not found: $RESTIC_REPO"
+    exit 1
+fi
 
-# Create restore directory if it doesn't exist
-mkdir -p "$RESTORE_DIR"
-
-# Run restore
-restic restore "$SNAPSHOT_ID" \
-    --target "$RESTORE_DIR" \
+# === FETCH LATEST SNAPSHOT ID ===
+echo "🔍 Fetching latest snapshot ID..." | tee -a "$LOG_FILE"
+LATEST_SNAPSHOT_ID=$(restic snapshots \
     --repo "$RESTIC_REPO" \
-    2>&1 | tee -a "$LOG_FILE"
+    --password-file "$PASSWORD_FILE" \
+    --json | jq -r '.[-1].short_id')
 
-# Check exit status
-if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-    echo "❌ Restore failed: $(date)" | tee -a "$LOG_FILE"
+if [ -z "$LATEST_SNAPSHOT_ID" ]; then
+    echo "❌ Could not determine latest snapshot ID" | tee -a "$LOG_FILE"
     exit 1
 fi
 
-echo "✅ Restore completed successfully: $(date)" | tee -a "$LOG_FILE"
+echo "📦 Latest snapshot ID: $LATEST_SNAPSHOT_ID" | tee -a "$LOG_FILE"
+
+# === PREPARE RESTORE TARGET ===
+echo "📁 Cleaning restore target: $RESTORE_TARGET" | tee -a "$LOG_FILE"
+rm -rf "$RESTORE_TARGET"
+mkdir -p "$RESTORE_TARGET"
+
+# === RESTORE ===
+echo "🚀 Restoring snapshot $LATEST_SNAPSHOT_ID..." | tee -a "$LOG_FILE"
+restic restore "$LATEST_SNAPSHOT_ID" \
+    --repo "$RESTIC_REPO" \
+    --password-file "$PASSWORD_FILE" \
+    --target "$RESTORE_TARGET" \
+    | tee -a "$LOG_FILE"
+
+if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+    echo "❌ Restore failed!" | tee -a "$LOG_FILE"
+    exit 1
+else
+    echo "✅ Restore completed successfully at $(date)" | tee -a "$LOG_FILE"
+    echo "📂 Restored files are in: $RESTORE_TARGET"
+fi
