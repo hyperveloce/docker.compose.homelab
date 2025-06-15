@@ -75,6 +75,12 @@ if [ "${PIPESTATUS[0]}" -ne 0 ]; then
     exit 1
 fi
 
+# === UNLOCK STALE REPO LOCKS BEFORE PRUNE ===
+echo "🔓 Ensuring repo is not locked..." | tee -a "$LOG_FILE"
+$RESTIC_BIN unlock \
+  --repo "$REPO_PATH" \
+  --password-command "echo $RESTIC_PASSWORD" >> "$LOG_FILE" 2>&1
+
 # === RETENTION POLICY (Run only on Sundays) ===
 DAY_OF_WEEK=$(date +%u)
 if [ "$DAY_OF_WEEK" -eq 7 ]; then
