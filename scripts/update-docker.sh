@@ -22,11 +22,11 @@ log "Starting Docker container updates..."
 
 # Pull the latest images
 log "Pulling the latest images..."
-docker compose pull
+docker-compose pull
 
 # Recreate containers with updated images
 log "Recreating containers..."
-docker compose up -d --remove-orphans
+docker-compose up -d --remove-orphans
 
 # Remove old images and containers
 log "Cleaning up old images and containers..."
