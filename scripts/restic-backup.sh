@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Setup backup directory
-# RESTIC_PASSWORD_FILE=/home/kanasu/git.hyperveloce/docker.compose.homelab/.env restic init --repo /mnt/asus/kserver_backup/restic-backups
-# restic init --repo /mnt/asus/kserver_backup/restic-backups
-
 # === CONFIGURATION ===
 ENV_FILE="/home/kanasu/git.hyperveloce/docker.compose.homelab/.env"
 LOG_FILE="/srv/data/log/restic-backup.log"
@@ -11,7 +7,10 @@ BACKUP_MOUNT="/mnt/asus/kserver_backup"
 REPO_PATH="$BACKUP_MOUNT/restic-backups"
 RESTIC_BIN="$(which restic)"
 BACKUP_PATHS=("/srv/data")
-NEXTCLOUD_DB_DUMP="/srv/data/db_backup/nextcloud.sql"
+
+DB_BACKUP_DIR="/srv/data/db_backup"
+NEXTCLOUD_DB_DUMP="$DB_BACKUP_DIR/nextcloud.sql"
+IMMICH_DB_DUMP="$DB_BACKUP_DIR/immich_postgres.sql.gz"
 
 # === LOAD ENVIRONMENT VARIABLES ===
 if [ -f "$ENV_FILE" ]; then
@@ -23,7 +22,10 @@ else
     exit 1
 fi
 
-# Unset RESTIC_PASSWORD_FILE if set, to avoid file lookup
+# Ensure db_backup directory exists
+mkdir -p "$DB_BACKUP_DIR"
+
+# Unset RESTIC_PASSWORD_FILE if set, to avoid conflicts
 unset RESTIC_PASSWORD_FILE
 
 # === CHECK RESTIC PASSWORD ===
@@ -40,40 +42,53 @@ if ! mountpoint -q "$BACKUP_MOUNT"; then
 fi
 
 # === DUMP NEXTCLOUD DATABASE ===
-echo "📦 Dumping Nextcloud database using Docker..." | tee -a "$LOG_FILE"
+echo "📦 Dumping Nextcloud DB..." | tee -a "$LOG_FILE"
 docker run --rm --network app_network \
   -e MYSQL_PWD="$MYSQL_PASSWORD" \
   mysql:8.0 \
   mysqldump -h nc_db -u nextcloud nextcloud > "$NEXTCLOUD_DB_DUMP"
 
 if [ $? -ne 0 ]; then
-    echo "❌ ERROR: Database dump failed!" | tee -a "$LOG_FILE"
+    echo "❌ ERROR: Nextcloud DB dump failed!" | tee -a "$LOG_FILE"
+    exit 1
+fi
+
+# === DUMP IMMICH DATABASE ===
+echo "📦 Dumping Immich Postgres DB..." | tee -a "$LOG_FILE"
+docker exec -t immich_postgres \
+  pg_dumpall --clean --if-exists --username=postgres | gzip > "$IMMICH_DB_DUMP"
+
+if [ $? -ne 0 ]; then
+    echo "❌ ERROR: Immich DB dump failed!" | tee -a "$LOG_FILE"
     exit 1
 fi
 
 # === RUN RESTIC BACKUP ===
 echo "🚀 Starting backup: $(date)" | tee -a "$LOG_FILE"
 $RESTIC_BIN backup "${BACKUP_PATHS[@]}" \
-  --repo "$REPO_PATH" >> "$LOG_FILE" 2>&1
+  --repo "$REPO_PATH" \
+  --password-command "echo $RESTIC_PASSWORD" \
+  >> "$LOG_FILE" 2>&1
 
 if [ "${PIPESTATUS[0]}" -ne 0 ]; then
     echo "❌ ERROR: Restic backup failed!" | tee -a "$LOG_FILE"
     exit 1
 fi
 
-# === RETENTION POLICY ON SUNDAYS ===
-DAY_OF_WEEK=$(date +%u)  # 7 = Sunday
+# === RETENTION POLICY (Run only on Sundays) ===
+DAY_OF_WEEK=$(date +%u)
 if [ "$DAY_OF_WEEK" -eq 7 ]; then
     echo "🧹 Applying retention policy..." | tee -a "$LOG_FILE"
     $RESTIC_BIN forget \
       --repo "$REPO_PATH" \
+      --password-command "echo $RESTIC_PASSWORD" \
       --keep-daily 7 \
       --keep-weekly 2 \
       --keep-monthly 2 \
       --prune >> "$LOG_FILE" 2>&1
 
     if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-        echo "❌ ERROR: Restic retention/prune failed!" | tee -a "$LOG_FILE"
+        echo "❌ ERROR: Retention/prune failed!" | tee -a "$LOG_FILE"
         exit 1
     fi
 fi
