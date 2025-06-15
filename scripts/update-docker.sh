@@ -4,6 +4,7 @@
 # Set the path to your Docker Compose files
 DOCKER_COMPOSE_DIR="/home/kanasu/git.hyperveloce/docker.compose.homelab"
 LOG_FILE="/var/log/docker_update.log"
+NEXTCLOUD_CONTAINER="nextcloud"
 
 # Timestamp function
 timestamp() {
@@ -16,22 +17,38 @@ log() {
 }
 
 # Navigate to the Docker Compose directory
-cd "$DOCKER_COMPOSE_DIR" || { log "Failed to navigate to $DOCKER_COMPOSE_DIR"; exit 1; }
+cd "$DOCKER_COMPOSE_DIR" || { log "❌ Failed to navigate to $DOCKER_COMPOSE_DIR"; exit 1; }
 
-log "Starting Docker container updates..."
+log "🚀 Starting Docker container updates..."
 
 # Pull the latest images
-log "Pulling the latest images..."
+log "📥 Pulling the latest images..."
 docker-compose pull
 
 # Recreate containers with updated images
-log "Recreating containers..."
+log "🔄 Recreating containers..."
 docker-compose up -d --remove-orphans
 
-# Remove old images and containers
-log "Cleaning up old images and containers..."
+# Wait for Nextcloud to initialize (adjust sleep if needed)
+log "⏳ Waiting a few seconds for Nextcloud to initialize..."
+sleep 10
+
+# Run Nextcloud upgrade
+log "⚙️ Running Nextcloud upgrade..."
+docker exec -u www-data "$NEXTCLOUD_CONTAINER" php occ upgrade || log "⚠️ occ upgrade failed"
+
+# Run maintenance:repair
+log "🛠️ Running Nextcloud maintenance:repair..."
+docker exec -u www-data "$NEXTCLOUD_CONTAINER" php occ maintenance:repair || log "⚠️ maintenance:repair returned warnings"
+
+# Ensure maintenance mode is off
+log "✅ Disabling maintenance mode..."
+docker exec -u www-data "$NEXTCLOUD_CONTAINER" php occ maintenance:mode --off || log "⚠️ Failed to disable maintenance mode"
+
+# Cleanup
+log "🧹 Cleaning up old images and containers..."
 docker system prune -af --volumes
 
-log "Docker update and cleanup completed."
+log "🎉 Docker update and Nextcloud upgrade completed."
 
 exit 0
