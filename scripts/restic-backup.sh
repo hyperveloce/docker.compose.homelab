@@ -2,8 +2,7 @@
 
 # Setup backup directory
 # RESTIC_PASSWORD_FILE=/home/kanasu/git.hyperveloce/docker.compose.homelab/.env restic init --repo /mnt/asus/kserver_backup/restic-backups
-
-#!/bin/bash
+# restic init --repo /mnt/asus/kserver_backup/restic-backups
 
 # === CONFIGURATION ===
 ENV_FILE="/home/kanasu/git.hyperveloce/docker.compose.homelab/.env"
@@ -23,6 +22,9 @@ else
     echo "❌ ERROR: .env file not found at $ENV_FILE" | tee -a "$LOG_FILE"
     exit 1
 fi
+
+# Unset RESTIC_PASSWORD_FILE if set, to avoid file lookup
+unset RESTIC_PASSWORD_FILE
 
 # === CHECK RESTIC PASSWORD ===
 if [ -z "$RESTIC_PASSWORD" ]; then
