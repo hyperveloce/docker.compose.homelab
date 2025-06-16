@@ -47,7 +47,9 @@ docker exec -u www-data "$NEXTCLOUD_CONTAINER" php occ maintenance:mode --off ||
 
 # Cleanup
 log "🧹 Cleaning up old images and containers..."
-docker system prune -af --volumes
+docker system prune -f
+docker image prune -f
+docker network prune -f
 
 log "🎉 Docker update and Nextcloud upgrade completed."
 
