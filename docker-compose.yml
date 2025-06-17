@@ -289,7 +289,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DOCKER_HOST=http://192.168.50.201:2375 # Use host IP for docker-socket-proxy
-      - DOZZLE_REMOTE_AGENT=pi-server:7007
+      - DOZZLE_REMOTE_AGENT=192.168.50.200:7007
     networks:
       - app_network
     depends_on:
